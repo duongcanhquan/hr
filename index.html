@@ -3,207 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cổng Thông Tin Nhân Sự - LaPage</title>
+    <title>Cổng Dịch Vụ Nhân Sự - LaPage School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- CSS TÙY CHỈNH --- */
+        /* CSS Tùy chỉnh */
         @media print {
             .no-print { display: none !important; }
-            body { background-color: white; }
-            .shadow-xl, .shadow-md { box-shadow: none !important; }
-            .tab-nav { display: none !important; }
-            .tab-content { display: block !important; }
-            .tab-content.hidden { display: none !important; }
-            input, select, textarea {
-                border: none !important;
-                border-bottom: 1px dotted #ccc !important;
-                padding-left: 0 !important;
-                background: transparent !important;
-                resize: none;
-            }
+            body { background: white; }
+            .shadow-xl { box-shadow: none !important; }
+            input, select, textarea { border: none !important; border-bottom: 1px dotted #ccc !important; padding-left: 0; background: transparent; }
         }
         
-        .table-container::-webkit-scrollbar { height: 8px; }
-        .table-container::-webkit-scrollbar-track { background: #f1f1f1; }
-        .table-container::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        .tab-btn { transition: all 0.2s; border-bottom: 4px solid transparent; }
+        .tab-btn.active { transform: translateY(-2px); }
         
-        .tab-btn { transition: all 0.3s ease; }
-        .tab-btn.active {
-            transform: translateY(-2px);
-            border-bottom-width: 4px;
-        }
         /* Màu active cho từng tab */
-        #btn-tab-attendance.active { background-color: #1e40af; color: white; border-color: #172554; }
-        #btn-tab-ot.active { background-color: #c2410c; color: white; border-color: #7c2d12; }
-        #btn-tab-leave.active { background-color: #15803d; color: white; border-color: #14532d; }
+        #btn-tab-attendance.active { background-color: #1e40af; color: white; border-color: #172554; } /* Blue */
+        #btn-tab-ot.active { background-color: #c2410c; color: white; border-color: #7c2d12; } /* Orange */
+        #btn-tab-leave.active { background-color: #15803d; color: white; border-color: #14532d; } /* Green */
 
-        .tab-btn:not(.active):hover { background-color: #f3f4f6; }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translate3d(0, -10px, 0); }
-            to { opacity: 1; transform: translate3d(0, 0, 0); }
-        }
-        .animate-fade-in-down { animation: fadeInDown 0.3s ease-out; }
-
-        /* Custom Radio Style */
-        .leave-radio:checked + div {
-            background-color: #dcfce7; border-color: #16a34a; color: #14532d;
-        }
-        .leave-radio:checked + div i { color: #16a34a; }
+        .loading-overlay { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(2px); }
+        
+        /* Custom Scrollbar */
+        .table-wrap::-webkit-scrollbar { height: 8px; }
+        .table-wrap::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen font-sans text-gray-800 pb-10">
+<body class="bg-slate-50 min-h-screen font-sans text-slate-800 pb-10">
 
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+    <div class="max-w-6xl mx-auto px-4 pt-6">
         
-        <div class="flex flex-col md:flex-row items-center justify-between bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
+        <div class="flex flex-col md:flex-row items-center justify-between bg-white rounded-xl shadow-sm p-6 mb-6 border border-slate-200">
             <div class="flex items-center space-x-4">
-                <div class="h-16 w-16 bg-blue-50 rounded-full flex items-center justify-center text-blue-800 text-2xl border border-blue-100">
-                    <i class="fas fa-university"></i>
+                <div class="h-14 w-14 bg-blue-600 text-white rounded-lg flex items-center justify-center text-2xl shadow-lg">
+                    <i class="fas fa-graduation-cap"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-blue-900 uppercase">Cổng Dịch Vụ Nhân Sự</h1>
-                    <p class="text-sm text-gray-500">Hệ thống xử lý tự động LaPage</p>
+                    <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Cổng Dịch Vụ Nhân Sự</h1>
+                    <p class="text-sm text-slate-500">Hệ thống tiếp nhận yêu cầu tự động</p>
                 </div>
             </div>
             <div class="mt-4 md:mt-0 text-right hidden md:block">
-                <p class="font-semibold text-gray-700"><i class="fas fa-calendar-day mr-2 text-blue-600"></i><span id="currentDate"></span></p>
+                <div class="text-sm font-semibold text-slate-600" id="currentDate"></div>
+                <div class="text-xs text-slate-400">LaPage Portal v1.2</div>
             </div>
         </div>
 
-        <div class="tab-nav grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 no-print">
-            <button onclick="switchTab('tab-attendance')" id="btn-tab-attendance" class="tab-btn active bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center gap-3">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 no-print">
+            <button onclick="switchTab('tab-attendance')" id="btn-tab-attendance" class="tab-btn active bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex items-center gap-3 hover:bg-slate-50">
                 <i class="fas fa-clipboard-check text-xl"></i>
-                <div class="text-left"><div class="font-bold text-sm uppercase">Xác Nhận Công</div></div>
+                <div class="text-left"><div class="font-bold text-sm uppercase">Xác Nhận Công</div><div class="text-xs opacity-70">Quên chấm công, lỗi máy</div></div>
             </button>
-            <button onclick="switchTab('tab-ot')" id="btn-tab-ot" class="tab-btn bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center gap-3">
+            <button onclick="switchTab('tab-ot')" id="btn-tab-ot" class="tab-btn bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex items-center gap-3 hover:bg-slate-50">
                 <i class="fas fa-clock text-xl"></i>
-                <div class="text-left"><div class="font-bold text-sm uppercase">Làm Thêm Giờ</div></div>
+                <div class="text-left"><div class="font-bold text-sm uppercase">Làm Thêm Giờ</div><div class="text-xs opacity-70">Đăng ký tăng ca (OT)</div></div>
             </button>
-            <button onclick="switchTab('tab-leave')" id="btn-tab-leave" class="tab-btn bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center gap-3">
+            <button onclick="switchTab('tab-leave')" id="btn-tab-leave" class="tab-btn bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex items-center gap-3 hover:bg-slate-50">
                 <i class="fas fa-plane-departure text-xl"></i>
-                <div class="text-left"><div class="font-bold text-sm uppercase">Xin Nghỉ Phép</div></div>
+                <div class="text-left"><div class="font-bold text-sm uppercase">Xin Nghỉ Phép</div><div class="text-xs opacity-70">Phép năm, ốm, việc riêng</div></div>
             </button>
         </div>
 
-        <div class="bg-white shadow-xl rounded-xl border border-gray-200 overflow-hidden relative min-h-[500px]">
+        <div class="bg-white shadow-xl rounded-xl border border-slate-200 overflow-hidden relative min-h-[600px]">
             
+            <div id="loading" class="hidden loading-overlay absolute inset-0 z-50 flex flex-col items-center justify-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600 mb-4"></div>
+                <p class="text-lg font-semibold text-blue-800 animate-pulse">Đang gửi dữ liệu lên hệ thống...</p>
+                <p class="text-sm text-slate-500">Vui lòng không tắt trình duyệt</p>
+            </div>
+
             <div id="tab-attendance" class="tab-content p-6 md:p-10">
-                <div class="border-b-2 border-blue-800 pb-4 mb-6"><h2 class="text-2xl font-bold text-blue-800 uppercase">Đơn Xác Nhận Ngày Công</h2></div>
+                <div class="border-b-2 border-blue-800 pb-4 mb-6 flex justify-between items-end">
+                    <h2 class="text-2xl font-bold text-blue-800 uppercase">Đơn Xác Nhận Ngày Công</h2>
+                    <span class="text-xs text-white bg-blue-600 px-2 py-1 rounded">Mẫu HC-01</span>
+                </div>
+                
                 <form onsubmit="handleSubmit(event, 'xac_nhan_cong')">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div><label class="text-xs font-bold text-gray-500 uppercase">Họ và tên *</label><input type="text" id="att_name" required class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="text-xs font-bold text-gray-500 uppercase">ID Chấm công *</label><input type="text" id="att_id" required class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="text-xs font-bold text-gray-500 uppercase">Bộ phận *</label><input type="text" id="att_dept" required class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                        <div><label class="text-xs font-bold text-gray-500 uppercase">Cơ sở</label>
-                            <select id="att_base" class="w-full border rounded px-3 py-2 text-sm outline-none"><option value="DinhLe">Đinh Lê</option><option value="CauGiay">Cầu Giấy</option></select>
+                    <div class="bg-slate-50 p-6 rounded-lg border border-slate-200 mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <div class="space-y-4">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Họ và tên *</label><input type="text" id="att_name" required class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Mã nhân viên (ID) *</label><input type="text" id="att_id" required class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"></div>
                         </div>
-                        <div class="md:col-span-2"><label class="text-xs font-bold text-red-500 uppercase">Email Quản lý (Duyệt) *</label><input type="email" id="att_manager_email" required class="w-full border border-red-200 bg-red-50 rounded px-3 py-2 text-sm outline-none"></div>
+                        <div class="space-y-4">
+                             <div><label class="text-xs font-bold text-slate-500 uppercase">Email của bạn (Để nhận KQ) *</label><input type="email" id="att_email" required class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white" placeholder="email@lapage.vn"></div>
+                             <div><label class="text-xs font-bold text-slate-500 uppercase">Bộ phận / Khoa *</label><input type="text" id="att_dept" required class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"></div>
+                        </div>
+                        <div class="space-y-4">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Cơ sở làm việc</label>
+                                <select id="att_base" class="w-full border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"><option value="CoSo1">Cơ sở 1</option><option value="CoSo2">Cơ sở 2</option></select>
+                            </div>
+                            <div><label class="text-xs font-bold text-red-500 uppercase">Email Quản lý (Người duyệt) *</label><input type="email" id="att_manager_email" required class="w-full border border-red-200 bg-red-50 text-red-700 rounded px-3 py-2 text-sm outline-none placeholder-red-200" placeholder="manager@lapage.vn"></div>
+                        </div>
                     </div>
 
-                    <div class="flex justify-between items-end mb-2">
-                        <h3 class="font-bold text-gray-700">Chi tiết ngày công</h3>
-                        <button type="button" onclick="addRow('attendance-table-body')" class="no-print bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded hover:bg-blue-700"><i class="fas fa-plus"></i> Thêm dòng</button>
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-slate-700"><i class="fas fa-list-ol mr-2"></i>Chi tiết ngày công cần xác nhận</h3>
+                        <button type="button" onclick="addRow('attendance-table-body')" class="no-print bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded shadow transition"><i class="fas fa-plus mr-1"></i> Thêm dòng</button>
                     </div>
-                    <div class="overflow-x-auto table-container border rounded mb-6">
-                        <table class="min-w-full divide-y divide-gray-200 text-sm">
-                            <thead class="bg-gray-100">
+                    
+                    <div class="overflow-x-auto table-wrap border rounded-lg mb-6 shadow-sm">
+                        <table class="min-w-full divide-y divide-slate-200 text-sm">
+                            <thead class="bg-slate-100 font-semibold text-slate-600">
                                 <tr>
-                                    <th class="px-2 py-2 text-left">Ngày</th>
-                                    <th class="px-2 py-2">Giờ vào</th><th class="px-2 py-2">Giờ ra</th>
-                                    <th class="px-2 py-2 bg-blue-50">CC Vào</th><th class="px-2 py-2 bg-blue-50">CC Ra</th>
-                                    <th class="px-2 py-2">Tổng giờ</th><th class="px-2 py-2">Lý do</th>
-                                    <th class="px-2 py-2 no-print">Xóa</th>
+                                    <th class="px-3 py-3 text-left min-w-[130px]">Ngày</th>
+                                    <th class="px-2 py-3">Giờ vào</th><th class="px-2 py-3">Giờ ra</th>
+                                    <th class="px-2 py-3 bg-blue-50 text-blue-700">CC Vào</th><th class="px-2 py-3 bg-blue-50 text-blue-700">CC Ra</th>
+                                    <th class="px-2 py-3 w-16">Giờ LV</th>
+                                    <th class="px-2 py-3 min-w-[200px]">Lý do / Giải trình</th>
+                                    <th class="px-2 py-3 no-print w-10">Xóa</th>
                                 </tr>
                             </thead>
-                            <tbody id="attendance-table-body" class="divide-y divide-gray-200 bg-white">
-                                </tbody>
+                            <tbody id="attendance-table-body" class="divide-y divide-slate-200 bg-white"></tbody>
                         </table>
                     </div>
-                    <div class="text-right no-print"><button type="submit" class="bg-blue-800 text-white font-bold py-2 px-6 rounded shadow hover:bg-blue-900">Gửi Xác Nhận</button></div>
+
+                    <div class="flex justify-end no-print pt-4 border-t border-slate-100">
+                        <button type="submit" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 px-8 rounded shadow-lg transition transform hover:-translate-y-1 flex items-center">
+                            <i class="fas fa-paper-plane mr-2"></i> GỬI YÊU CẦU
+                        </button>
+                    </div>
                 </form>
             </div>
 
             <div id="tab-ot" class="tab-content hidden p-6 md:p-10">
-                <div class="border-b-2 border-orange-500 pb-4 mb-6"><h2 class="text-2xl font-bold text-orange-600 uppercase">Đăng Ký Làm Thêm (OT)</h2></div>
+                <div class="border-b-2 border-orange-500 pb-4 mb-6 flex justify-between items-end">
+                    <h2 class="text-2xl font-bold text-orange-600 uppercase">Đăng Ký Làm Thêm (OT)</h2>
+                    <span class="text-xs text-white bg-orange-500 px-2 py-1 rounded">Mẫu OT-02</span>
+                </div>
+                
                 <form onsubmit="handleSubmit(event, 'lam_them')">
-                    <div class="bg-orange-50 p-4 rounded border border-orange-100 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="text-xs font-bold text-gray-600 uppercase">Họ và tên *</label><input type="text" id="ot_name" required class="w-full bg-white border border-orange-200 rounded px-3 py-2 outline-none"></div>
-                        <div><label class="text-xs font-bold text-gray-600 uppercase">Bộ phận *</label><input type="text" id="ot_dept" required class="w-full bg-white border border-orange-200 rounded px-3 py-2 outline-none"></div>
-                        <div class="md:col-span-2"><label class="text-xs font-bold text-red-500 uppercase">Email Quản lý *</label><input type="email" id="ot_manager_email" required class="w-full bg-white border border-red-200 rounded px-3 py-2 outline-none"></div>
+                    <div class="bg-orange-50 p-6 rounded-lg border border-orange-100 mb-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="space-y-4">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Họ và tên *</label><input type="text" id="ot_name" required class="w-full border border-orange-200 rounded px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-orange-400"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Email của bạn *</label><input type="email" id="ot_email" required class="w-full border border-orange-200 rounded px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-orange-400"></div>
+                        </div>
+                        <div class="space-y-4">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Bộ phận *</label><input type="text" id="ot_dept" required class="w-full border border-orange-200 rounded px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-orange-400"></div>
+                            <div><label class="text-xs font-bold text-red-500 uppercase">Email Quản lý *</label><input type="email" id="ot_manager_email" required class="w-full border border-red-200 bg-white rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-400"></div>
+                        </div>
                     </div>
 
-                    <div class="flex justify-between items-end mb-4">
-                        <h3 class="font-bold text-orange-700">Chi tiết ca làm</h3>
-                        <button type="button" onclick="addOTRow()" class="no-print bg-orange-600 text-white text-xs font-bold px-3 py-2 rounded hover:bg-orange-700"><i class="fas fa-plus"></i> Thêm ca</button>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-orange-800">Chi tiết ca làm việc</h3>
+                        <button type="button" onclick="addOTRow()" class="no-print bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold px-4 py-2 rounded shadow transition"><i class="fas fa-plus mr-1"></i> Thêm ca</button>
                     </div>
                     
-                    <div id="ot-list-container" class="space-y-4"></div> <div class="mt-4 p-4 bg-orange-50 rounded border border-orange-200 text-right">
-                        <span class="text-orange-800 font-bold uppercase mr-4">Tổng cộng:</span>
-                        <span class="text-2xl font-bold text-orange-700"><span id="ot-total-hours">0</span>h</span>
+                    <div id="ot-list-container" class="space-y-4 mb-6"></div> 
+
+                    <div class="bg-orange-100 p-4 rounded border border-orange-200 flex justify-between items-center mb-6">
+                        <span class="font-bold text-orange-900 uppercase">Tổng thời gian OT dự kiến:</span>
+                        <span class="text-3xl font-bold text-orange-700"><span id="ot-total-hours">0</span> <span class="text-sm">giờ</span></span>
                     </div>
-                    <div class="mt-4"><label class="text-sm font-bold">Ghi chú chung</label><textarea id="ot_note" class="w-full border rounded p-2 h-20 outline-none"></textarea></div>
-                    <div class="text-right mt-6 no-print"><button type="submit" class="bg-orange-600 text-white font-bold py-2 px-6 rounded shadow hover:bg-orange-700">Gửi Đăng Ký</button></div>
+
+                    <div class="mb-6"><label class="text-sm font-bold text-slate-700 block mb-2">Lý do / Ghi chú thêm</label><textarea id="ot_note" class="w-full border rounded p-3 h-20 outline-none focus:ring-2 focus:ring-orange-400" placeholder="VD: Deadline dự án X..."></textarea></div>
+
+                    <div class="flex justify-end no-print pt-4 border-t border-slate-100">
+                        <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded shadow-lg transition transform hover:-translate-y-1 flex items-center">
+                            <i class="fas fa-paper-plane mr-2"></i> ĐĂNG KÝ OT
+                        </button>
+                    </div>
                 </form>
             </div>
 
             <div id="tab-leave" class="tab-content hidden p-6 md:p-10">
-                <div class="border-b-2 border-green-600 pb-4 mb-6"><h2 class="text-2xl font-bold text-green-700 uppercase">Đơn Xin Nghỉ Phép</h2></div>
+                <div class="border-b-2 border-green-600 pb-4 mb-6 flex justify-between items-end">
+                    <h2 class="text-2xl font-bold text-green-700 uppercase">Đơn Xin Nghỉ Phép</h2>
+                    <span class="text-xs text-white bg-green-600 px-2 py-1 rounded">Mẫu LEAVE-03</span>
+                </div>
+
                 <form onsubmit="handleSubmit(event, 'nghi_phep')">
-                    <div class="bg-green-50 p-6 rounded border border-green-100 grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <div><label class="text-xs font-bold text-gray-600 uppercase">Họ và tên *</label><input type="text" id="leave_name" required class="w-full bg-white border border-green-200 rounded px-3 py-2 outline-none"></div>
-                        <div><label class="text-xs font-bold text-gray-600 uppercase">Chức vụ *</label><input type="text" id="leave_title" required class="w-full bg-white border border-green-200 rounded px-3 py-2 outline-none"></div>
-                        <div><label class="text-xs font-bold text-gray-600 uppercase">Bộ phận *</label><input type="text" id="leave_dept" required class="w-full bg-white border border-green-200 rounded px-3 py-2 outline-none"></div>
-                        <div class="md:col-span-3"><label class="text-xs font-bold text-red-500 uppercase">Email Quản lý (Duyệt) *</label><input type="email" id="leave_manager_email" required class="w-full bg-white border border-red-200 rounded px-3 py-2 outline-none"></div>
-                    </div>
-
-                    <h3 class="font-bold text-green-700 mb-4">Loại nghỉ phép</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <label class="cursor-pointer relative"><input type="radio" name="leaveType" class="sr-only leave-radio" value="Phép năm" required><div class="p-3 border rounded hover:bg-gray-50 flex items-center"><i class="far fa-calendar-check text-gray-400 mr-2"></i><span>Phép năm</span></div></label>
-                        <label class="cursor-pointer relative"><input type="radio" name="leaveType" class="sr-only leave-radio" value="Nghỉ ốm"><div class="p-3 border rounded hover:bg-gray-50 flex items-center"><i class="fas fa-procedures text-gray-400 mr-2"></i><span>Nghỉ ốm</span></div></label>
-                        <label class="cursor-pointer relative"><input type="radio" name="leaveType" class="sr-only leave-radio" value="Việc riêng"><div class="p-3 border rounded hover:bg-gray-50 flex items-center"><i class="fas fa-user-clock text-gray-400 mr-2"></i><span>Việc riêng</span></div></label>
-                        <label class="cursor-pointer relative"><input type="radio" name="leaveType" class="sr-only leave-radio" value="Không lương"><div class="p-3 border rounded hover:bg-gray-50 flex items-center"><i class="fas fa-wallet text-gray-400 mr-2"></i><span>Không lương</span></div></label>
-                    </div>
-
-                    <div class="bg-white p-6 rounded border shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 items-end mb-6">
-                        <div><label class="text-sm font-bold">Từ ngày</label><input type="date" id="leaveStartDate" onchange="calculateLeaveDays()" required class="w-full border rounded px-3 py-2 outline-none"></div>
-                        <div><label class="text-sm font-bold">Đến ngày</label><input type="date" id="leaveEndDate" onchange="calculateLeaveDays()" required class="w-full border rounded px-3 py-2 outline-none"></div>
-                        <div class="bg-green-50 p-2 rounded text-center border border-green-200">
-                            <label class="text-xs font-bold text-green-800 uppercase">Tổng ngày</label>
-                            <div class="text-2xl font-bold text-green-700"><input type="number" id="leaveTotalDays" value="0" readonly class="w-16 text-center bg-transparent outline-none"></div>
+                    <div class="bg-green-50 p-6 rounded-lg border border-green-100 mb-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="space-y-4">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Họ và tên *</label><input type="text" id="leave_name" required class="w-full bg-white border border-green-200 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Email của bạn *</label><input type="email" id="leave_email" required class="w-full bg-white border border-green-200 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase">Chức vụ *</label><input type="text" id="leave_title" required class="w-full bg-white border border-green-200 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                        </div>
+                        <div class="space-y-4">
+                             <div><label class="text-xs font-bold text-slate-500 uppercase">Bộ phận *</label><input type="text" id="leave_dept" required class="w-full bg-white border border-green-200 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                             <div><label class="text-xs font-bold text-red-500 uppercase">Email Quản lý *</label><input type="email" id="leave_manager_email" required class="w-full bg-white border border-red-200 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
                         </div>
                     </div>
-                    <div><label class="text-sm font-bold">Lý do cụ thể</label><textarea id="leave_reason" class="w-full border rounded p-3 h-24 outline-none"></textarea></div>
 
-                    <div class="text-right mt-6 no-print"><button type="submit" class="bg-green-600 text-white font-bold py-2 px-6 rounded shadow hover:bg-green-700">Gửi Đơn</button></div>
+                    <h3 class="font-bold text-green-800 mb-3">1. Loại nghỉ phép</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <label class="cursor-pointer"><input type="radio" name="leaveType" class="peer sr-only" value="Phép năm" required><div class="p-3 border rounded hover:bg-gray-50 peer-checked:bg-green-100 peer-checked:border-green-500 peer-checked:text-green-800 transition flex items-center justify-center"><i class="far fa-calendar-check mr-2"></i>Phép năm</div></label>
+                        <label class="cursor-pointer"><input type="radio" name="leaveType" class="peer sr-only" value="Nghỉ ốm"><div class="p-3 border rounded hover:bg-gray-50 peer-checked:bg-green-100 peer-checked:border-green-500 peer-checked:text-green-800 transition flex items-center justify-center"><i class="fas fa-procedures mr-2"></i>Nghỉ ốm</div></label>
+                        <label class="cursor-pointer"><input type="radio" name="leaveType" class="peer sr-only" value="Việc riêng"><div class="p-3 border rounded hover:bg-gray-50 peer-checked:bg-green-100 peer-checked:border-green-500 peer-checked:text-green-800 transition flex items-center justify-center"><i class="fas fa-user-clock mr-2"></i>Việc riêng</div></label>
+                        <label class="cursor-pointer"><input type="radio" name="leaveType" class="peer sr-only" value="Không lương"><div class="p-3 border rounded hover:bg-gray-50 peer-checked:bg-green-100 peer-checked:border-green-500 peer-checked:text-green-800 transition flex items-center justify-center"><i class="fas fa-wallet mr-2"></i>Không lương</div></label>
+                    </div>
+
+                    <h3 class="font-bold text-green-800 mb-3">2. Thời gian</h3>
+                    <div class="bg-white p-5 rounded border shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 items-end mb-6">
+                        <div><label class="text-sm font-bold text-slate-700">Từ ngày</label><input type="date" id="leaveStartDate" onchange="calcLeave()" required class="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                        <div><label class="text-sm font-bold text-slate-700">Đến ngày</label><input type="date" id="leaveEndDate" onchange="calcLeave()" required class="w-full border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                        <div class="bg-green-50 p-2 rounded text-center border border-green-200">
+                            <label class="text-xs font-bold text-green-800 uppercase">Tổng cộng</label>
+                            <div class="text-2xl font-bold text-green-700"><input type="number" id="leaveTotalDays" value="0" readonly class="w-20 text-center bg-transparent outline-none"> <span class="text-sm">ngày</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6"><label class="text-sm font-bold text-slate-700 block mb-2">Lý do nghỉ (Cụ thể)</label><textarea id="leave_reason" required class="w-full border rounded p-3 h-24 outline-none focus:ring-2 focus:ring-green-400" placeholder="Vui lòng ghi rõ lý do..."></textarea></div>
+
+                    <div class="flex justify-end no-print pt-4 border-t border-slate-100">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded shadow-lg transition transform hover:-translate-y-1 flex items-center">
+                            <i class="fas fa-paper-plane mr-2"></i> GỬI ĐƠN NGHỈ
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden flex items-center justify-center z-50 px-4">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center animate-fade-in-down">
+    <div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden flex items-center justify-center z-50 px-4 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center">
             <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-check text-green-600 text-3xl"></i></div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Thành công!</h3>
-            <p class="text-gray-600 mb-6">Đã gửi dữ liệu lên hệ thống.</p>
-            <button onclick="document.getElementById('successModal').classList.add('hidden')" class="w-full bg-blue-800 text-white py-2 rounded hover:bg-blue-900">Đóng</button>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Gửi thành công!</h3>
+            <p class="text-gray-600 mb-6">Đơn của bạn đã được chuyển đến quản lý.</p>
+            <button onclick="document.getElementById('successModal').classList.add('hidden')" class="w-full bg-blue-800 text-white py-2 rounded font-bold hover:bg-blue-900 transition">Đóng cửa sổ</button>
         </div>
     </div>
 
     <script>
-        // ================= CẤU HÌNH =================
-        const N8N_WEBHOOK_URL = 'https://apchn-host.lapage.vn/webhook/submit-portal'; // <--- PASTE LINK CỦA BẠN VÀO ĐÂY
-        // ============================================
+        // ======================================================
+        // CẤU HÌNH WEBHOOK - THAY LINK N8N CỦA BẠN VÀO ĐÂY
+        const N8N_WEBHOOK_URL = 'https://apchn-host.lapage.vn/webhook/submit-portal'; 
+        // ======================================================
 
-        // Init
+        // Khởi tạo
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' });
+        
         document.addEventListener('DOMContentLoaded', () => {
-            addRow('attendance-table-body');
-            addOTRow();
+            addRow('attendance-table-body'); // Thêm 1 dòng trống mặc định
+            addOTRow(); // Thêm 1 ca trống mặc định
         });
 
-        // 1. Tab Logic
+        // Chuyển Tab
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -211,57 +246,63 @@
             document.getElementById('btn-' + tabId).classList.add('active');
         }
 
-        // 2. Attendance Table Logic
+        // --- LOGIC: XÁC NHẬN CÔNG ---
         function addRow(tbodyId) {
             const tbody = document.getElementById(tbodyId);
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td class="px-2 py-2"><input type="date" class="item-date w-full border-b focus:border-blue-500 outline-none text-sm"></td>
-                <td class="px-2 py-2"><input type="time" class="item-in w-full border-b focus:border-blue-500 outline-none text-sm"></td>
-                <td class="px-2 py-2"><input type="time" class="item-out w-full border-b focus:border-blue-500 outline-none text-sm"></td>
-                <td class="px-2 py-2 bg-blue-50"><input type="time" class="item-cc-in w-full border-b border-blue-300 outline-none text-sm bg-transparent"></td>
-                <td class="px-2 py-2 bg-blue-50"><input type="time" class="item-cc-out w-full border-b border-blue-300 outline-none text-sm bg-transparent"></td>
-                <td class="px-2 py-2"><input type="text" placeholder="8" class="item-total w-full border-b outline-none text-sm text-center"></td>
-                <td class="px-2 py-2"><input type="text" class="item-reason w-full border-b outline-none text-sm"></td>
-                <td class="px-2 py-2 text-center no-print"><button type="button" onclick="this.closest('tr').remove()" class="text-gray-400 hover:text-red-500"><i class="fas fa-trash-alt"></i></button></td>
+                <td class="px-2 py-2"><input type="date" class="item-date w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent"></td>
+                <td class="px-2 py-2"><input type="time" class="item-in w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent"></td>
+                <td class="px-2 py-2"><input type="time" class="item-out w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent"></td>
+                <td class="px-2 py-2 bg-blue-50"><input type="time" class="item-cc-in w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-800"></td>
+                <td class="px-2 py-2 bg-blue-50"><input type="time" class="item-cc-out w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-800"></td>
+                <td class="px-2 py-2"><input type="text" placeholder="8" class="item-total w-full border-b outline-none text-sm py-1 bg-transparent text-center"></td>
+                <td class="px-2 py-2"><input type="text" class="item-reason w-full border-b outline-none text-sm py-1 bg-transparent" placeholder="..."></td>
+                <td class="px-2 py-2 text-center no-print"><button type="button" onclick="this.closest('tr').remove()" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button></td>
             `;
             tbody.appendChild(row);
         }
 
-        // 3. OT Logic
+        // --- LOGIC: OT (LÀM THÊM) ---
         function addOTRow() {
             const container = document.getElementById('ot-list-container');
             const item = document.createElement('div');
-            item.className = 'ot-item bg-white border border-gray-200 rounded-lg p-4 shadow-sm relative animate-fade-in-down mb-4';
+            item.className = 'ot-item bg-white border border-slate-200 rounded-lg p-4 shadow-sm relative mb-3';
             const today = new Date().toISOString().split('T')[0];
             item.innerHTML = `
-                <button type="button" onclick="removeOTRow(this)" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 p-1"><i class="fas fa-times"></i></button>
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                    <div class="md:col-span-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-gray-50 p-2 rounded border"><label class="text-xs font-bold text-gray-500 uppercase">Bắt đầu</label><div class="flex gap-2"><input type="time" onchange="calcOT(this)" class="ot-start-time w-1/2 border rounded px-1 text-sm bg-white"><input type="date" onchange="calcOT(this)" value="${today}" class="ot-start-date w-1/2 border rounded px-1 text-sm text-gray-600 bg-white"></div></div>
-                        <div class="bg-gray-50 p-2 rounded border"><label class="text-xs font-bold text-gray-500 uppercase">Kết thúc</label><div class="flex gap-2"><input type="time" onchange="calcOT(this)" class="ot-end-time w-1/2 border rounded px-1 text-sm bg-white"><input type="date" onchange="calcOT(this)" value="${today}" class="ot-end-date w-1/2 border rounded px-1 text-sm text-gray-600 bg-white"></div></div>
-                    </div>
-                    <div class="md:col-span-2 flex flex-col justify-center items-center bg-orange-50 rounded border border-orange-100"><span class="text-3xl font-bold text-orange-600 row-hours">0</span><span class="text-xs uppercase font-bold text-orange-800">Giờ</span></div>
+                <button type="button" onclick="removeOT(this)" class="absolute top-2 right-2 text-slate-400 hover:text-red-500 p-1"><i class="fas fa-times"></i></button>
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-2">
+                    <div class="md:col-span-5 bg-slate-50 p-2 rounded"><label class="text-[10px] font-bold text-slate-500 uppercase">Bắt đầu</label><div class="flex gap-2"><input type="time" onchange="calcOT(this)" class="ot-start-time w-1/2 border rounded px-1 text-sm bg-white"><input type="date" onchange="calcOT(this)" value="${today}" class="ot-start-date w-1/2 border rounded px-1 text-sm text-slate-600 bg-white"></div></div>
+                    <div class="md:col-span-5 bg-slate-50 p-2 rounded"><label class="text-[10px] font-bold text-slate-500 uppercase">Kết thúc</label><div class="flex gap-2"><input type="time" onchange="calcOT(this)" class="ot-end-time w-1/2 border rounded px-1 text-sm bg-white"><input type="date" onchange="calcOT(this)" value="${today}" class="ot-end-date w-1/2 border rounded px-1 text-sm text-slate-600 bg-white"></div></div>
+                    <div class="md:col-span-2 flex flex-col justify-center items-center bg-orange-50 rounded border border-orange-100"><span class="text-2xl font-bold text-orange-600 row-hours">0</span><span class="text-[10px] uppercase font-bold text-orange-800">Giờ</span></div>
                 </div>
-                <div class="mt-2 pt-2 border-t border-gray-100"><input type="text" class="ot-project w-full border rounded px-2 py-1 text-sm" placeholder="Mô tả công việc..."></div>
+                <input type="text" class="ot-project w-full border-b border-slate-200 focus:border-orange-500 outline-none py-1 text-sm" placeholder="Mô tả công việc (Dự án, task)...">
             `;
             container.appendChild(item);
         }
 
-        function removeOTRow(btn) {
+        function removeOT(btn) {
             const list = document.getElementById('ot-list-container');
-            if(list.children.length > 1) btn.closest('.ot-item').remove();
-            else { /* Clear inputs */ btn.closest('.ot-item').querySelectorAll('input').forEach(i=>i.value=''); btn.closest('.ot-item').querySelector('.row-hours').innerText='0'; }
-            updateTotalOT();
+            if(list.children.length > 1) { btn.closest('.ot-item').remove(); updateTotalOT(); }
+            else { 
+                const item = btn.closest('.ot-item');
+                item.querySelectorAll('input').forEach(i => i.value = ''); 
+                item.querySelector('.row-hours').innerText = '0';
+                updateTotalOT();
+            }
         }
 
         function calcOT(input) {
             const row = input.closest('.ot-item');
-            const s = new Date(row.querySelector('.ot-start-date').value + 'T' + row.querySelector('.ot-start-time').value);
-            const e = new Date(row.querySelector('.ot-end-date').value + 'T' + row.querySelector('.ot-end-time').value);
-            let h = (e - s) / 36e5; 
-            row.querySelector('.row-hours').innerText = (h > 0) ? h.toFixed(1) : 0;
-            updateTotalOT();
+            const sVal = row.querySelector('.ot-start-time').value;
+            const eVal = row.querySelector('.ot-end-time').value;
+            if(sVal && eVal) {
+                const s = new Date(row.querySelector('.ot-start-date').value + 'T' + sVal);
+                const e = new Date(row.querySelector('.ot-end-date').value + 'T' + eVal);
+                let h = (e - s) / 36e5; 
+                row.querySelector('.row-hours').innerText = (h > 0) ? h.toFixed(1) : 0;
+                updateTotalOT();
+            }
         }
 
         function updateTotalOT() {
@@ -270,57 +311,90 @@
             document.getElementById('ot-total-hours').innerText = total.toFixed(1);
         }
 
-        // 4. Leave Logic
-        function calculateLeaveDays() {
-            const s = new Date(document.getElementById('leaveStartDate').value);
-            const e = new Date(document.getElementById('leaveEndDate').value);
-            const diff = (e - s) / 864e5;
-            document.getElementById('leaveTotalDays').value = (diff >= 0) ? (diff + 1) : 0;
+        // --- LOGIC: NGHỈ PHÉP ---
+        function calcLeave() {
+            const sStr = document.getElementById('leaveStartDate').value;
+            const eStr = document.getElementById('leaveEndDate').value;
+            if(sStr && eStr) {
+                const s = new Date(sStr); const e = new Date(eStr);
+                const diff = (e - s) / 864e5;
+                document.getElementById('leaveTotalDays').value = (diff >= 0) ? (diff + 1) : 0;
+            }
         }
 
-        // 5. MAIN SUBMIT FUNCTION
+        // --- CORE: XỬ LÝ GỬI FORM ---
         function handleSubmit(e, type) {
             e.preventDefault();
+            
+            // 1. Hiển thị Loading
+            const loading = document.getElementById('loading');
+            loading.classList.remove('hidden');
+
+            // 2. Thu thập dữ liệu
             let data = { form_type: type, submitted_at: new Date().toISOString() };
 
             if (type === 'xac_nhan_cong') {
                 data.ho_ten = document.getElementById('att_name').value;
+                data.email_nv = document.getElementById('att_email').value; // Mới
                 data.id_cc = document.getElementById('att_id').value;
                 data.bo_phan = document.getElementById('att_dept').value;
                 data.co_so = document.getElementById('att_base').value;
                 data.email_quan_ly = document.getElementById('att_manager_email').value;
+                
+                // Lấy bảng chi tiết
                 data.chi_tiet = [];
                 document.querySelectorAll('#attendance-table-body tr').forEach(row => {
                     let d = row.querySelector('.item-date').value;
                     if(d) data.chi_tiet.push({
-                        ngay: d, gio_vao: row.querySelector('.item-in').value, gio_ra: row.querySelector('.item-out').value,
-                        cc_vao: row.querySelector('.item-cc-in').value, cc_ra: row.querySelector('.item-cc-out').value,
-                        tong: row.querySelector('.item-total').value, ly_do: row.querySelector('.item-reason').value
+                        ngay: d, 
+                        gio_vao: row.querySelector('.item-in').value, 
+                        gio_ra: row.querySelector('.item-out').value,
+                        cc_vao: row.querySelector('.item-cc-in').value, 
+                        cc_ra: row.querySelector('.item-cc-out').value,
+                        tong: row.querySelector('.item-total').value, 
+                        ly_do: row.querySelector('.item-reason').value
                     });
                 });
+                
+                if(data.chi_tiet.length === 0) {
+                    alert("Vui lòng nhập ít nhất 1 dòng chi tiết!");
+                    loading.classList.add('hidden');
+                    return;
+                }
             } 
             else if (type === 'lam_them') {
                 data.ho_ten = document.getElementById('ot_name').value;
+                data.email_nv = document.getElementById('ot_email').value; // Mới
                 data.bo_phan = document.getElementById('ot_dept').value;
                 data.email_quan_ly = document.getElementById('ot_manager_email').value;
                 data.tong_gio = document.getElementById('ot-total-hours').innerText;
                 data.ghi_chu = document.getElementById('ot_note').value;
+                
                 data.chi_tiet = [];
                 document.querySelectorAll('.ot-item').forEach(row => {
                     let sd = row.querySelector('.ot-start-date').value;
-                    if(sd) data.chi_tiet.push({
-                        bat_dau: sd + ' ' + row.querySelector('.ot-start-time').value,
+                    let st = row.querySelector('.ot-start-time').value;
+                    if(sd && st) data.chi_tiet.push({
+                        bat_dau: sd + ' ' + st,
                         ket_thuc: row.querySelector('.ot-end-date').value + ' ' + row.querySelector('.ot-end-time').value,
                         so_gio: row.querySelector('.row-hours').innerText,
                         cong_viec: row.querySelector('.ot-project').value
                     });
                 });
+
+                if(data.chi_tiet.length === 0) {
+                    alert("Vui lòng thêm ít nhất 1 ca làm việc!");
+                    loading.classList.add('hidden');
+                    return;
+                }
             }
             else if (type === 'nghi_phep') {
                 data.ho_ten = document.getElementById('leave_name').value;
+                data.email_nv = document.getElementById('leave_email').value; // Mới
                 data.chuc_vu = document.getElementById('leave_title').value;
                 data.bo_phan = document.getElementById('leave_dept').value;
                 data.email_quan_ly = document.getElementById('leave_manager_email').value;
+                
                 let radio = document.querySelector('input[name="leaveType"]:checked');
                 data.loai_nghi = radio ? radio.value : '';
                 data.tu_ngay = document.getElementById('leaveStartDate').value;
@@ -329,19 +403,31 @@
                 data.ly_do = document.getElementById('leave_reason').value;
             }
 
-            console.log('Sending:', data);
+            console.log('Sending Payload:', data);
 
-            // Gửi Webhook
+            // 3. Gửi Webhook N8N
             fetch(N8N_WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
-            .then(res => {
-                document.getElementById('successModal').classList.remove('hidden');
-                e.target.reset(); // Reset form
+            .then(response => {
+                loading.classList.add('hidden');
+                if(response.ok) {
+                    document.getElementById('successModal').classList.remove('hidden');
+                    e.target.reset(); // Xóa trắng form
+                    // Reset các giá trị mặc định
+                    if(type === 'lam_them') document.getElementById('ot-total-hours').innerText = '0';
+                    if(type === 'nghi_phep') document.getElementById('leaveTotalDays').value = '0';
+                } else {
+                    alert('Lỗi Server N8N: ' + response.status);
+                }
             })
-            .catch(err => alert('Lỗi: ' + err));
+            .catch(error => {
+                loading.classList.add('hidden');
+                alert('Không thể kết nối tới N8N. Kiểm tra lại đường truyền hoặc Webhook URL.');
+                console.error('Error:', error);
+            });
         }
     </script>
 </body>
