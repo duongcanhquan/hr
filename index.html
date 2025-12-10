@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cổng Dịch Vụ Nhân Sự - LaPage School</title>
+    <title>Cổng Dịch Vụ Nhân Sự - Trường Cao Đẳng Việt Mỹ Hà Nội</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -45,17 +45,17 @@
         
         <div class="flex flex-col md:flex-row items-center justify-between bg-white rounded-xl shadow-sm p-6 mb-6 border border-slate-200">
             <div class="flex items-center space-x-5">
-                <div class="h-16 w-16 bg-blue-900 text-white rounded-xl flex items-center justify-center text-3xl shadow-lg">
-                    <i class="fas fa-university"></i>
+                <div class="h-20 w-auto flex items-center justify-center p-1">
+                    <img src="https://raw.githubusercontent.com/duongcanhquan/image/main/logo%20vietmy.webp" alt="Logo Việt Mỹ Hà Nội" class="h-full object-contain">
                 </div>
                 <div>
                     <h1 class="text-2xl font-bold text-slate-900 uppercase tracking-tight">Cổng Dịch Vụ Nhân Sự</h1>
-                    <p class="text-sm text-slate-500">Hệ thống xử lý & Phê duyệt tự động</p>
+                    <p class="text-sm text-slate-500">Trường Cao Đẳng Việt Mỹ Hà Nội</p>
                 </div>
             </div>
             <div class="mt-4 md:mt-0 text-right hidden md:block">
                 <div class="text-sm font-semibold text-blue-800" id="currentDate"></div>
-                <div class="text-xs text-slate-400">Version 2.0</div>
+                <div class="text-xs text-slate-400">Version 2.2 (Logo Update)</div>
             </div>
         </div>
 
@@ -155,6 +155,17 @@
                         </div>
                     </div>
 
+                    <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Căn cứ (Theo kế hoạch/Dự án nào) *</label>
+                            <input type="text" id="ot_basis" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-orange-400" placeholder="VD: Theo kế hoạch dự án tuyển sinh...">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Đề xuất (Nghỉ bù/Trả lương) *</label>
+                            <input type="text" id="ot_proposal" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-orange-400" placeholder="VD: Đề xuất nghỉ bù vào tuần sau">
+                        </div>
+                    </div>
+
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold text-orange-800 text-lg">Chi tiết ca làm việc</h3>
                         <button type="button" onclick="addOTRow()" class="no-print bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition flex items-center"><i class="fas fa-plus mr-2"></i> Thêm ca</button>
@@ -225,7 +236,7 @@
             </div>
         </div>
         
-        <div class="text-center text-slate-400 text-sm mt-8 pb-8 no-print">&copy; 2025 LaPage School HR System</div>
+        <div class="text-center text-slate-400 text-sm mt-8 pb-8 no-print">@2025 Trường Cao Đẳng Việt Mỹ Hà Nội</div>
     </div>
 
     <div id="successModal" class="fixed inset-0 bg-slate-900 bg-opacity-70 hidden flex items-center justify-center z-50 px-4 backdrop-blur-sm">
@@ -267,16 +278,51 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td class="p-2"><input type="date" class="item-date w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent"></td>
-                <td class="p-2"><input type="time" class="item-in w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent"></td>
-                <td class="p-2"><input type="time" class="item-out w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent"></td>
+                <td class="p-2"><input type="time" class="item-in w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)"></td>
+                <td class="p-2"><input type="time" class="item-out w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)"></td>
                 <td class="p-2 bg-blue-50"><input type="time" class="item-cc-in w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700"></td>
                 <td class="p-2 bg-blue-50"><input type="time" class="item-cc-out w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700"></td>
-                <td class="p-2"><input type="text" placeholder="8" class="item-total w-full border-b outline-none text-sm py-1 bg-transparent text-center"></td>
+                <td class="p-2"><input type="text" name="tong_cong_calc" placeholder="0" class="item-total w-full border-b outline-none text-sm py-1 bg-transparent text-center font-bold text-blue-600" readonly></td>
                 <td class="p-2"><input type="text" placeholder="HC" class="item-type w-full border-b outline-none text-sm py-1 bg-transparent"></td>
                 <td class="p-2"><input type="text" class="item-reason w-full border-b outline-none text-sm py-1 bg-transparent" placeholder="..."></td>
                 <td class="p-2 text-center no-print"><button type="button" onclick="this.closest('tr').remove()" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button></td>
             `;
             tbody.appendChild(row);
+        }
+
+        // === HÀM TÍNH CÔNG TỰ ĐỘNG (NEW) ===
+        function calcAttendance(input) {
+            const row = input.closest('tr');
+            const inTime = row.querySelector('.item-in').value;
+            const outTime = row.querySelector('.item-out').value;
+            const totalInput = row.querySelector('.item-total');
+
+            if (inTime && outTime) {
+                const [h1, m1] = inTime.split(':').map(Number);
+                const [h2, m2] = outTime.split(':').map(Number);
+                
+                // Quy đổi ra phút
+                let minutes = (h2 * 60 + m2) - (h1 * 60 + m1);
+
+                // Logic trừ nghỉ trưa: Nếu làm > 5 tiếng (300p) thì trừ 60p
+                if (minutes > 300) {
+                    minutes = minutes - 60;
+                }
+
+                if (minutes > 0) {
+                    const hours = minutes / 60;
+                    let cong = 0;
+
+                    // Quy đổi ra CÔNG
+                    if (hours >= 8) cong = 1;
+                    else if (hours >= 4) cong = 0.5;
+                    else cong = (hours / 8).toFixed(2); // Tính lẻ
+
+                    totalInput.value = cong;
+                } else {
+                    totalInput.value = 0;
+                }
+            }
         }
 
         // --- 3. LOGIC BẢNG OT ---
@@ -382,6 +428,11 @@
                 data.email_quan_ly = document.getElementById('ot_manager_email').value;
                 data.tong_gio = document.getElementById('ot-total-hours').innerText;
                 data.ghi_chu = document.getElementById('ot_note').value;
+                
+                // --- THÊM 2 TRƯỜNG MỚI ---
+                data.can_cu = document.getElementById('ot_basis').value;
+                data.de_xuat = document.getElementById('ot_proposal').value;
+                // --------------------------
                 
                 data.chi_tiet = [];
                 document.querySelectorAll('.ot-item').forEach(row => {
