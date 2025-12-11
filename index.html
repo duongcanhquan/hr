@@ -10,7 +10,7 @@
         /* --- CSS TÙY CHỈNH --- */
         body { background-color: #f8fafc; font-family: 'Segoe UI', Roboto, sans-serif; }
         
-        /* Chế độ in ấn: Ẩn các nút, chỉ hiện nội dung đơn */
+        /* Chế độ in ấn */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
@@ -37,6 +37,55 @@
         /* Thanh cuộn bảng */
         .table-wrap::-webkit-scrollbar { height: 8px; }
         .table-wrap::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* === CSS TỐI ƯU MOBILE (QUAN TRỌNG) === */
+        @media (max-width: 768px) {
+            .attendance-table-body thead { display: none; } /* Ẩn tiêu đề bảng */
+            .attendance-table-body tr { 
+                display: block; 
+                margin-bottom: 20px;
+                border: 1px solid #ccc;
+                padding: 15px;
+                border-radius: 8px;
+                background-color: #fcfcfc;
+            }
+            .attendance-table-body tr td { 
+                display: block; 
+                width: 100% !important; 
+                padding: 0 !important;
+                border: none;
+            }
+            .input-group {
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* Chia 2 cột cho Giờ vào/Giờ ra */
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+            .mobile-label { /* Hiển thị tên trường input trên di động */
+                font-weight: bold;
+                font-size: 11px;
+                color: #475569;
+                text-transform: uppercase;
+                display: block;
+                margin-top: 5px;
+            }
+            .mobile-label-cc {
+                 background-color: #eff6ff; 
+                 padding: 5px 10px;
+                 border-radius: 4px;
+                 margin-bottom: 5px;
+            }
+        }
+        /* Tinh chỉnh Bảng chi tiết cho DESKTOP */
+        @media (min-width: 769px) {
+            .attendance-row-line-2 td {
+                padding-top: 0 !important;
+            }
+            .attendance-row-line-2 .cc-col {
+                padding-top: 12px !important;
+                border-top: 1px solid #f1f5f9;
+            }
+        }
     </style>
 </head>
 <body class="text-slate-800 pb-20">
@@ -55,7 +104,7 @@
             </div>
             <div class="mt-4 md:mt-0 text-right hidden md:block">
                 <div class="text-sm font-semibold text-blue-800" id="currentDate"></div>
-                <div class="text-xs text-slate-400">Version 2.2</div>
+                <div class="text-xs text-slate-400">Version 2.4</div>
             </div>
         </div>
 
@@ -109,24 +158,32 @@
 
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="font-bold text-slate-800 text-lg">Chi tiết ngày công xác nhận</h3>
-                        <button type="button" onclick="addRow('attendance-table-body')" class="no-print bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition flex items-center"><i class="fas fa-plus mr-2"></i> Thêm dòng</button>
+                        <button type="button" onclick="addRow()" class="no-print bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition flex items-center"><i class="fas fa-plus mr-2"></i> Thêm dòng</button>
                     </div>
                     
                     <div class="overflow-x-auto table-wrap border rounded-lg mb-8 shadow-sm">
-                        <table class="min-w-full divide-y divide-slate-200 text-sm">
+                        <table class="min-w-full divide-y divide-slate-200 text-sm hidden md:table">
                             <thead class="bg-slate-100 font-bold text-slate-600">
                                 <tr>
-                                    <th class="px-3 py-3 text-left min-w-[130px]">Ngày</th>
-                                    <th class="px-2 py-3 w-24">Giờ vào</th><th class="px-2 py-3 w-24">Giờ ra</th>
-                                    <th class="px-2 py-3 bg-blue-50 text-blue-700 w-24">CC Vào</th><th class="px-2 py-3 bg-blue-50 text-blue-700 w-24">CC Ra</th>
-                                    <th class="px-2 py-3 w-20 text-center">Công</th>
-                                    <th class="px-2 py-3 w-24">Hình thức</th>
-                                    <th class="px-2 py-3 min-w-[200px]">Lý do / Giải trình</th>
-                                    <th class="px-2 py-3 no-print w-10 text-center">Xóa</th>
+                                    <th class="px-3 py-3 text-left min-w-[130px]" rowspan="2">Ngày</th>
+                                    <th class="px-2 py-3 w-48 text-center" colspan="2">Giờ thực tế</th>
+                                    <th class="px-2 py-3 bg-blue-50 text-blue-700 w-48 text-center" colspan="2">Giờ chấm công (CC)</th>
+                                    <th class="px-2 py-3 w-20 text-center" rowspan="2">Công</th>
+                                    <th class="px-2 py-3 w-24" rowspan="2">Hình thức</th>
+                                    <th class="px-2 py-3 min-w-[200px]" rowspan="2">Lý do / Giải trình</th>
+                                    <th class="px-2 py-3 no-print w-10 text-center" rowspan="2">Xóa</th>
+                                </tr>
+                                <tr>
+                                    <th class="px-2 py-1 w-24 border-t border-slate-200">Vào</th>
+                                    <th class="px-2 py-1 w-24 border-t border-slate-200">Ra</th>
+                                    <th class="px-2 py-1 w-24 border-t border-blue-100 bg-blue-50 text-blue-700">Vào</th>
+                                    <th class="px-2 py-1 w-24 border-t border-blue-100 bg-blue-50 text-blue-700">Ra</th>
                                 </tr>
                             </thead>
-                            <tbody id="attendance-table-body" class="divide-y divide-slate-200 bg-white"></tbody>
+                            <tbody id="attendance-table-body" class="divide-y divide-slate-200 bg-white attendance-table-body"></tbody>
                         </table>
+
+                        <div id="attendance-mobile-container" class="block md:hidden"></div>
                     </div>
 
                     <div class="flex justify-end no-print pt-6 border-t border-slate-100">
@@ -260,8 +317,8 @@
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' });
         
         document.addEventListener('DOMContentLoaded', () => {
-            addRow('attendance-table-body'); // Thêm 1 dòng trống mặc định
-            addOTRow(); // Thêm 1 ca OT mặc định
+            // Chạy addRow() 1 lần duy nhất khi tải trang
+            addRow(); 
         });
 
         function switchTab(tabId) {
@@ -272,36 +329,164 @@
             document.getElementById('btn-' + tabId).classList.add('active');
         }
 
-        // --- 2. LOGIC BẢNG XÁC NHẬN CÔNG ---
-        function addRow(tbodyId) {
-            const tbody = document.getElementById(tbodyId);
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="p-2"><input type="date" class="item-date w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent"></td>
-                <td class="p-2"><input type="time" class="item-in w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)"></td>
-                <td class="p-2"><input type="time" class="item-out w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)"></td>
-                <td class="p-2 bg-blue-50"><input type="time" class="item-cc-in w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700"></td>
-                <td class="p-2 bg-blue-50"><input type="time" class="item-cc-out w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700"></td>
-                <td class="p-2"><input type="text" name="tong_cong_calc" placeholder="0" class="item-total w-full border-b outline-none text-sm py-1 bg-transparent text-center font-bold text-blue-600" readonly></td>
-                <td class="p-2"><input type="text" placeholder="HC" class="item-type w-full border-b outline-none text-sm py-1 bg-transparent"></td>
-                <td class="p-2"><input type="text" class="item-reason w-full border-b outline-none text-sm py-1 bg-transparent" placeholder="..."></td>
-                <td class="p-2 text-center no-print"><button type="button" onclick="this.closest('tr').remove()" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button></td>
+        // --- 2. LOGIC BẢNG XÁC NHẬN CÔNG (TỐI ƯU CẢ MOBILE & DESKTOP) ---
+        function addRow() {
+            const tbody = document.getElementById('attendance-table-body');
+            const mobileContainer = document.getElementById('attendance-mobile-container');
+            const uniqueId = Date.now(); // ID duy nhất cho mỗi cặp Row/Card
+
+            // Logic cho DESKTOP (Row chính trong Table)
+            const rowTable = document.createElement('tr');
+            rowTable.className = 'attendance-row border-t border-slate-200';
+            rowTable.id = `row-${uniqueId}`; // Gán ID cho Desktop Row
+            rowTable.innerHTML = `
+                <td class="p-2 pt-3" rowspan="2">
+                    <input type="date" class="item-date w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent">
+                </td>
+                <td class="p-2">
+                    <input type="time" class="item-in w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)">
+                </td>
+                <td class="p-2">
+                    <input type="time" class="item-out w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)">
+                </td>
+                <td class="p-2 bg-blue-50 cc-col">
+                    <input type="time" class="item-cc-in w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700">
+                </td>
+                <td class="p-2 bg-blue-50">
+                    <input type="time" class="item-cc-out w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700">
+                </td>
+                <td class="p-2 pt-3 text-center" rowspan="2">
+                    <input type="text" name="tong_cong_calc" placeholder="0" class="item-total w-full border-b outline-none text-sm py-1 bg-transparent text-center font-bold text-blue-600" readonly>
+                </td>
+                <td class="p-2 pt-3" rowspan="2">
+                    <input type="text" placeholder="HC" class="item-type w-full border-b outline-none text-sm py-1 bg-transparent">
+                </td>
+                <td class="p-2 pt-3" rowspan="2">
+                    <input type="text" class="item-reason w-full border-b outline-none text-sm py-1 bg-transparent" placeholder="...">
+                </td>
+                <td class="p-2 text-center no-print pt-3" rowspan="2">
+                    <button type="button" onclick="removeRow(this)" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
+                </td>
             `;
-            tbody.appendChild(row);
+            tbody.appendChild(rowTable);
+
+            // Logic cho MOBILE (Cards)
+            const rowMobile = document.createElement('div');
+            rowMobile.className = 'attendance-card border border-slate-300 rounded-lg p-4 mb-4';
+            rowMobile.id = `card-${uniqueId}`; // Gán ID cho Mobile Card
+            rowMobile.innerHTML = `
+                <div class="flex justify-between items-center mb-3 border-b pb-2">
+                    <span class="text-sm font-bold text-blue-800">Đơn ngày:</span>
+                    <button type="button" onclick="removeCard(this)" class="no-print text-slate-400 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i> Xóa</button>
+                </div>
+
+                <div class="mb-3">
+                    <span class="mobile-label">1. Ngày đăng ký *</span>
+                    <input type="date" class="item-date w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent">
+                </div>
+
+                <div class="input-group">
+                    <div><span class="mobile-label">2. Giờ vào (Thực tế)</span><input type="time" class="item-in w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)"></div>
+                    <div><span class="mobile-label">Giờ ra (Thực tế)</span><input type="time" class="item-out w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)"></div>
+                </div>
+
+                <div class="input-group bg-blue-50 p-2 rounded-lg my-3">
+                    <div><span class="mobile-label mobile-label-cc">3. CC Vào (Máy)</span><input type="time" class="item-cc-in w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700"></div>
+                    <div><span class="mobile-label mobile-label-cc">CC Ra (Máy)</span><input type="time" class="item-cc-out w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700"></div>
+                </div>
+
+                <div class="mb-3">
+                    <span class="mobile-label">4. CÔNG (Tự động tính)</span>
+                    <input type="text" name="tong_cong_calc" placeholder="0" class="item-total w-full border-b outline-none text-sm py-1 bg-transparent text-left font-bold text-blue-600 text-2xl" readonly>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="mobile-label">5. Hình thức</span>
+                    <input type="text" placeholder="HC" class="item-type w-full border-b outline-none text-sm py-1 bg-transparent">
+                </div>
+                
+                <div class="mb-0">
+                    <span class="mobile-label">6. Lý do / Giải trình</span>
+                    <input type="text" class="item-reason w-full border-b outline-none text-sm py-1 bg-transparent" placeholder="...">
+                </div>
+            `;
+            mobileContainer.appendChild(rowMobile);
+            
+            // Đồng bộ giữa hai phiên bản (RẤT QUAN TRỌNG)
+            const mobileInputs = rowMobile.querySelectorAll('input');
+            const tableInputs = rowTable.querySelectorAll('input');
+
+            // Gán data-linked-id để Javascript biết đối tượng nào liên kết với nhau
+            rowTable.dataset.linkedCard = rowMobile.id;
+            rowMobile.dataset.linkedRow = rowTable.id;
+
+            // Đồng bộ giá trị và sự kiện
+            mobileInputs.forEach((mInput, i) => {
+                const tInput = tableInputs[i];
+
+                // Khi thay đổi trên Mobile -> nhảy sang Desktop
+                mInput.addEventListener('input', () => { 
+                    tInput.value = mInput.value; 
+                    tInput.dispatchEvent(new Event('change')); 
+                });
+                // Khi thay đổi trên Desktop -> nhảy sang Mobile
+                tInput.addEventListener('input', () => { 
+                    mInput.value = tInput.value; 
+                    mInput.dispatchEvent(new Event('change')); 
+                });
+
+                // Đồng bộ logic tính công 
+                if (mInput.classList.contains('item-in') || mInput.classList.contains('item-out')) {
+                    mInput.addEventListener('change', () => calcAttendance(mInput));
+                    tInput.addEventListener('change', () => calcAttendance(tInput));
+                }
+            });
         }
 
-        // === HÀM TÍNH CÔNG TỰ ĐỘNG (NEW) ===
-        function calcAttendance(input) {
-            const row = input.closest('tr');
-            const inTime = row.querySelector('.item-in').value;
-            const outTime = row.querySelector('.item-out').value;
-            const totalInput = row.querySelector('.item-total');
+        // Hàm xóa đồng thời (cho nút Xóa trên Desktop)
+        function removeRow(btn) {
+            const rowTable = btn.closest('tr');
+            const linkedCardId = rowTable.dataset.linkedCard;
+            const linkedCard = document.getElementById(linkedCardId);
+            
+            rowTable.remove();
+            if (linkedCard) linkedCard.remove();
 
+            // Nếu không còn dòng nào, thêm lại 1 dòng mặc định
+            if (document.getElementById('attendance-table-body').children.length === 0) {
+                addRow();
+            }
+        }
+
+        // Hàm xóa đồng thời (cho nút Xóa trên Mobile Card)
+        function removeCard(btn) {
+            const rowMobile = btn.closest('.attendance-card');
+            const linkedRowId = rowMobile.dataset.linkedRow;
+            const linkedRow = document.getElementById(linkedRowId);
+            
+            rowMobile.remove();
+            if (linkedRow) linkedRow.remove();
+
+            // Nếu không còn dòng nào, thêm lại 1 dòng mặc định
+            if (document.getElementById('attendance-mobile-container').children.length === 0) {
+                addRow();
+            }
+        }
+
+        // === HÀM TÍNH CÔNG TỰ ĐỘNG ===
+        function calcAttendance(input) {
+            // Xác định xem Input đến từ phiên bản Table hay Mobile Card
+            const isMobile = input.closest('.attendance-card');
+            const container = isMobile ? input.closest('.attendance-card') : input.closest('tr');
+            
+            // Lấy giá trị từ container hiện tại
+            const inTime = container.querySelector('.item-in').value;
+            const outTime = container.querySelector('.item-out').value;
+            
             if (inTime && outTime) {
                 const [h1, m1] = inTime.split(':').map(Number);
                 const [h2, m2] = outTime.split(':').map(Number);
                 
-                // Quy đổi ra phút
                 let minutes = (h2 * 60 + m2) - (h1 * 60 + m1);
 
                 // Logic trừ nghỉ trưa: Nếu làm > 5 tiếng (300p) thì trừ 60p
@@ -313,19 +498,29 @@
                     const hours = minutes / 60;
                     let cong = 0;
 
-                    // Quy đổi ra CÔNG
                     if (hours >= 8) cong = 1;
                     else if (hours >= 4) cong = 0.5;
-                    else cong = (hours / 8).toFixed(2); // Tính lẻ
+                    else cong = (hours / 8).toFixed(2); 
+                    
+                    // Cập nhật giá trị vào cả hai phiên bản (Desktop và Mobile)
+                    // Dùng querySelectorAll để đảm bảo cập nhật cả 2 input đồng bộ
+                    document.querySelectorAll(`.item-total[name="tong_cong_calc"]`).forEach(el => {
+                        if (el.closest(`#${container.id}`) || el.closest(`#${isMobile ? container.dataset.linkedRow : container.dataset.linkedCard}`)) {
+                             el.value = cong;
+                        }
+                    });
 
-                    totalInput.value = cong;
                 } else {
-                    totalInput.value = 0;
+                    document.querySelectorAll(`.item-total[name="tong_cong_calc"]`).forEach(el => {
+                         if (el.closest(`#${container.id}`) || el.closest(`#${isMobile ? container.dataset.linkedRow : container.dataset.linkedCard}`)) {
+                             el.value = 0;
+                        }
+                    });
                 }
             }
         }
-
-        // --- 3. LOGIC BẢNG OT ---
+        
+        // --- 3. LOGIC BẢNG OT (KHÔNG ĐỔI) ---
         function addOTRow() {
             const container = document.getElementById('ot-list-container');
             const item = document.createElement('div');
@@ -376,7 +571,7 @@
             document.getElementById('ot-total-hours').innerText = total.toFixed(1);
         }
 
-        // --- 4. LOGIC NGHỈ PHÉP ---
+        // --- 4. LOGIC NGHỈ PHÉP (KHÔNG ĐỔI) ---
         function calcLeave() {
             const sStr = document.getElementById('leaveStartDate').value;
             const eStr = document.getElementById('leaveEndDate').value;
@@ -387,7 +582,7 @@
             }
         }
 
-        // --- 5. HÀM GỬI DỮ LIỆU ---
+        // --- 5. HÀM GỬI DỮ LIỆU (KHÔNG ĐỔI) ---
         function handleSubmit(e, type) {
             e.preventDefault();
             const loading = document.getElementById('loading');
@@ -407,7 +602,8 @@
                 data.email_quan_ly = document.getElementById('att_manager_email').value;
                 
                 data.chi_tiet = [];
-                document.querySelectorAll('#attendance-table-body tr').forEach(row => {
+                // CHỈ LẤY DỮ LIỆU TỪ BẢNG DESKTOP
+                document.querySelectorAll('#attendance-table-body tr').forEach(row => { 
                     let d = row.querySelector('.item-date').value;
                     if(d) data.chi_tiet.push({
                         ngay: d, 
@@ -429,10 +625,8 @@
                 data.tong_gio = document.getElementById('ot-total-hours').innerText;
                 data.ghi_chu = document.getElementById('ot_note').value;
                 
-                // --- THÊM 2 TRƯỜNG MỚI ---
                 data.can_cu = document.getElementById('ot_basis').value;
                 data.de_xuat = document.getElementById('ot_proposal').value;
-                // --------------------------
                 
                 data.chi_tiet = [];
                 document.querySelectorAll('.ot-item').forEach(row => {
