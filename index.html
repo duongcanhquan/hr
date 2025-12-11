@@ -76,16 +76,6 @@
                  margin-bottom: 5px;
             }
         }
-        /* Tinh chỉnh Bảng chi tiết cho DESKTOP */
-        @media (min-width: 769px) {
-            .attendance-row-line-2 td {
-                padding-top: 0 !important;
-            }
-            .attendance-row-line-2 .cc-col {
-                padding-top: 12px !important;
-                border-top: 1px solid #f1f5f9;
-            }
-        }
     </style>
 </head>
 <body class="text-slate-800 pb-20">
@@ -104,7 +94,7 @@
             </div>
             <div class="mt-4 md:mt-0 text-right hidden md:block">
                 <div class="text-sm font-semibold text-blue-800" id="currentDate"></div>
-                <div class="text-xs text-slate-400">Version 2.5</div>
+                <div class="text-xs text-slate-400">Version 2.6</div>
             </div>
         </div>
 
@@ -335,14 +325,14 @@
             const mobileContainer = document.getElementById('attendance-mobile-container');
             const uniqueId = Date.now(); // ID duy nhất cho mỗi cặp Row/Card
 
-            // Logic cho DESKTOP (Row chính trong Table - Cấu trúc 2 hàng/dòng dữ liệu)
+            // Logic cho DESKTOP (Row chính trong Table - Dùng 1 dòng duy nhất để tránh lỗi lệch cột)
             const rowTable = document.createElement('tr');
             rowTable.className = 'attendance-row border-t border-slate-200';
             rowTable.id = `row-${uniqueId}`; // Gán ID cho Desktop Row
-            
-            // <tr> Dòng 1: Ngày, Giờ thực tế, Giờ chấm công, Công, Hình thức, Lý do, Xóa (dùng rowspan=2 cho những ô này)
+
+            // <tr> Dòng 1: Đưa tất cả input vào 1 hàng duy nhất
             rowTable.innerHTML = `
-                <td class="p-2 pt-3" rowspan="2">
+                <td class="p-2">
                     <input type="date" class="item-date w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent">
                 </td>
                 <td class="p-2">
@@ -351,22 +341,22 @@
                 <td class="p-2">
                     <input type="time" class="item-out w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)">
                 </td>
-                <td class="p-2 bg-blue-50 cc-col">
+                <td class="p-2 bg-blue-50">
                     <input type="time" class="item-cc-in w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700">
                 </td>
                 <td class="p-2 bg-blue-50">
                     <input type="time" class="item-cc-out w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700">
                 </td>
-                <td class="p-2 pt-3 text-center" rowspan="2">
+                <td class="p-2 text-center">
                     <input type="text" name="tong_cong_calc" placeholder="0" class="item-total w-full border-b outline-none text-sm py-1 bg-transparent text-center font-bold text-blue-600" readonly>
                 </td>
-                <td class="p-2 pt-3" rowspan="2">
+                <td class="p-2">
                     <input type="text" placeholder="HC" class="item-type w-full border-b outline-none text-sm py-1 bg-transparent">
                 </td>
-                <td class="p-2 pt-3" rowspan="2">
+                <td class="p-2">
                     <input type="text" class="item-reason w-full border-b outline-none text-sm py-1 bg-transparent" placeholder="...">
                 </td>
-                <td class="p-2 text-center no-print pt-3" rowspan="2">
+                <td class="p-2 text-center no-print">
                     <button type="button" onclick="removeRow(this)" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
                 </td>
             `;
@@ -379,7 +369,7 @@
             rowMobile.innerHTML = `
                 <div class="flex justify-between items-center mb-3 border-b pb-2">
                     <span class="text-sm font-bold text-blue-800">Đơn ngày:</span>
-                    <button type="button" onclick="removeCard(this)" class="no-print text-slate-400 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i> Xóa</button>
+                    <button type="button" onclick="removeCard(this)" class="no-print text-slate-400 hover:text-red-500 transition"><i class="fas fa-times"></i> Xóa</button>
                 </div>
 
                 <div class="mb-3">
@@ -505,7 +495,6 @@
                     else cong = (hours / 8).toFixed(2); 
                     
                     // Cập nhật giá trị vào cả hai phiên bản (Desktop và Mobile)
-                    // Dùng querySelectorAll để đảm bảo cập nhật cả 2 input đồng bộ
                     document.querySelectorAll(`.item-total[name="tong_cong_calc"]`).forEach(el => {
                         // Chỉ cập nhật input item-total trong row hoặc card hiện tại đang được chỉnh sửa
                         if (el.closest(`#${container.id}`) || el.closest(`#${isMobile ? container.dataset.linkedRow : container.dataset.linkedCard}`)) {
@@ -605,7 +594,7 @@
                 data.email_quan_ly = document.getElementById('att_manager_email').value;
                 
                 data.chi_tiet = [];
-                // CHỈ LẤY DỮ LIỆU TỪ BẢNG DESKTOP (VÌ MOBILE CHỈ LÀ BẢN ĐỒNG BỘ)
+                // LẤY DỮ LIỆU TỪ BẢNG DESKTOP
                 document.querySelectorAll('#attendance-table-body tr').forEach(row => { 
                     let d = row.querySelector('.item-date').value;
                     if(d) data.chi_tiet.push({
