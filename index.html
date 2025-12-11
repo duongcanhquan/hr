@@ -104,7 +104,7 @@
             </div>
             <div class="mt-4 md:mt-0 text-right hidden md:block">
                 <div class="text-sm font-semibold text-blue-800" id="currentDate"></div>
-                <div class="text-xs text-slate-400">Version 2.4</div>
+                <div class="text-xs text-slate-400">Version 2.4 (Ready)</div>
             </div>
         </div>
 
@@ -317,8 +317,8 @@
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' });
         
         document.addEventListener('DOMContentLoaded', () => {
-            // Chạy addRow() 1 lần duy nhất khi tải trang
-            addRow(); 
+            addRow(); // Thêm 1 dòng trống mặc định
+            addOTRow(); // Thêm 1 ca OT mặc định
         });
 
         function switchTab(tabId) {
@@ -335,10 +335,12 @@
             const mobileContainer = document.getElementById('attendance-mobile-container');
             const uniqueId = Date.now(); // ID duy nhất cho mỗi cặp Row/Card
 
-            // Logic cho DESKTOP (Row chính trong Table)
+            // Logic cho DESKTOP (Row chính trong Table - Cấu trúc 2 hàng/dòng dữ liệu)
             const rowTable = document.createElement('tr');
             rowTable.className = 'attendance-row border-t border-slate-200';
             rowTable.id = `row-${uniqueId}`; // Gán ID cho Desktop Row
+            
+            // <tr> Dòng 1: Ngày, Giờ thực tế, Giờ chấm công, Công, Hình thức, Lý do, Xóa (dùng rowspan=2 cho những ô này)
             rowTable.innerHTML = `
                 <td class="p-2 pt-3" rowspan="2">
                     <input type="date" class="item-date w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent">
@@ -505,6 +507,7 @@
                     // Cập nhật giá trị vào cả hai phiên bản (Desktop và Mobile)
                     // Dùng querySelectorAll để đảm bảo cập nhật cả 2 input đồng bộ
                     document.querySelectorAll(`.item-total[name="tong_cong_calc"]`).forEach(el => {
+                        // Chỉ cập nhật input item-total trong row hoặc card hiện tại đang được chỉnh sửa
                         if (el.closest(`#${container.id}`) || el.closest(`#${isMobile ? container.dataset.linkedRow : container.dataset.linkedCard}`)) {
                              el.value = cong;
                         }
@@ -602,7 +605,7 @@
                 data.email_quan_ly = document.getElementById('att_manager_email').value;
                 
                 data.chi_tiet = [];
-                // CHỈ LẤY DỮ LIỆU TỪ BẢNG DESKTOP
+                // CHỈ LẤY DỮ LIỆU TỪ BẢNG DESKTOP (VÌ MOBILE CHỈ LÀ BẢN ĐỒNG BỘ)
                 document.querySelectorAll('#attendance-table-body tr').forEach(row => { 
                     let d = row.querySelector('.item-date').value;
                     if(d) data.chi_tiet.push({
