@@ -1,447 +1,677 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <base target="_top">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>THÔNG TIN NHÂN SỰ - APCHN</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cổng Dịch Vụ Nhân Sự - Trường Cao Đẳng Việt Mỹ Hà Nội</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #0d6efd; /* Màu chủ đạo */
-            --bg-color: #f0f2f5;
-            --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-        }
-
-        body { 
-            background-color: var(--bg-color); 
-            font-family: 'Roboto', sans-serif; 
-            color: #333;
-            padding-bottom: 40px;
-        }
-
-        .main-container {
-            max-width: 960px; /* Tối ưu cho iPad ngang và Laptop */
-            margin: 20px auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: var(--card-shadow);
-            overflow: hidden;
-        }
-
-        /* Header Logo Section */
-        .header-banner {
-            background: white;
-            padding: 30px 20px;
-            text-align: center;
-            border-bottom: 3px solid var(--primary-color);
-        }
-
-        .logo-img {
-            max-width: 250px; /* Kích thước logo trên máy tính */
-            height: auto;
-            margin-bottom: 15px;
-        }
-
-        .form-title {
-            color: #1a3a5c;
-            font-weight: 700;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            margin-bottom: 0;
-        }
-
-        /* Form Styling */
-        .form-padding {
-            padding: 30px;
-        }
-
-        .section-header {
-            background-color: #e7f1ff;
-            color: #0d6efd;
-            padding: 12px 15px;
-            border-radius: 8px;
-            font-weight: 700;
-            margin-top: 25px;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            border-left: 5px solid #0d6efd;
-        }
-
-        .form-label {
-            font-weight: 500;
-            font-size: 0.95rem;
-            color: #495057;
-            margin-bottom: 5px;
-        }
-
-        .form-control, .form-select {
-            border-radius: 8px;
-            padding: 10px 12px;
-            border: 1px solid #ced4da;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus, .form-select:focus {
-            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
-            border-color: #86b7fe;
-        }
-
-        /* Nút Gửi */
-        .btn-submit-wrapper {
-            margin-top: 40px;
-            margin-bottom: 20px;
-        }
-
-        .btn-submit {
-            background: linear-gradient(45deg, #0d6efd, #0043a8);
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 50px;
-            width: 100%;
-            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4);
-            transition: transform 0.2s;
-        }
-
-        .btn-submit:active {
-            transform: scale(0.98);
-        }
-
-        /* Mobile Optimization */
-        @media (max-width: 576px) {
-            .main-container {
-                margin: 0;
-                border-radius: 0;
-                box-shadow: none;
-            }
-            .form-padding {
-                padding: 20px 15px;
-            }
-            .logo-img {
-                max-width: 180px; /* Logo nhỏ hơn trên điện thoại */
-            }
-            .form-title {
-                font-size: 1.2rem;
-            }
-            .section-header {
-                font-size: 1rem;
-            }
-        }
+        /* --- CSS TÙY CHỈNH --- */
+        body { background-color: #f8fafc; font-family: 'Segoe UI', Roboto, sans-serif; }
         
-        .loading-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.9);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        /* Chế độ in ấn */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .shadow-xl, .shadow-sm { box-shadow: none !important; }
+            .tab-nav { display: none !important; }
+            .tab-content { display: none; }
+            .tab-content.active { display: block !important; }
+            input, select, textarea { border: none !important; border-bottom: 1px dotted #ccc !important; padding-left: 0; background: transparent; resize: none; }
+        }
+
+        /* Hiệu ứng chuyển Tab */
+        .tab-btn { transition: all 0.3s; border-bottom: 4px solid transparent; opacity: 0.7; }
+        .tab-btn:hover { opacity: 1; background-color: #f1f5f9; }
+        .tab-btn.active { opacity: 1; transform: translateY(-2px); }
+        
+        /* Màu sắc riêng cho từng Tab khi Active */
+        #btn-tab-attendance.active { background-color: white; color: #1e40af; border-color: #1e40af; } /* Xanh dương */
+        #btn-tab-ot.active { background-color: white; color: #c2410c; border-color: #c2410c; } /* Cam */
+        #btn-tab-leave.active { background-color: white; color: #15803d; border-color: #15803d; } /* Xanh lá */
+
+        /* Loading Overlay */
+        .loading-overlay { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(4px); }
+        
+        /* Thanh cuộn bảng */
+        .table-wrap::-webkit-scrollbar { height: 8px; }
+        .table-wrap::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* === CSS TỐI ƯU MOBILE (QUAN TRỌNG) === */
+        @media (max-width: 768px) {
+            .attendance-table-body thead { display: none; } /* Ẩn tiêu đề bảng */
+            .attendance-table-body tr { 
+                display: block; 
+                margin-bottom: 20px;
+                border: 1px solid #ccc;
+                padding: 15px;
+                border-radius: 8px;
+                background-color: #fcfcfc;
+            }
+            .attendance-table-body tr td { 
+                display: block; 
+                width: 100% !important; 
+                padding: 0 !important;
+                border: none;
+            }
+            .input-group {
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* Chia 2 cột cho Giờ vào/Giờ ra */
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+            .mobile-label { /* Hiển thị tên trường input trên di động */
+                font-weight: bold;
+                font-size: 11px;
+                color: #475569;
+                text-transform: uppercase;
+                display: block;
+                margin-top: 5px;
+            }
+            .mobile-label-cc {
+                 background-color: #eff6ff; 
+                 padding: 5px 10px;
+                 border-radius: 4px;
+                 margin-bottom: 5px;
+            }
         }
     </style>
 </head>
-<body>
+<body class="text-slate-800 pb-20">
 
-    <div class="main-container">
-        <div class="header-banner">
-            <img src="https://raw.githubusercontent.com/duongcanhquan/image/main/logo%20vietmy.webp" alt="Logo Viet My" class="logo-img">
-            <h1 class="form-title">HỒ SƠ NHÂN SỰ / HR PROFILE</h1>
-            <p class="text-muted mt-2 mb-0">Hệ thống quản lý nhân sự tập trung APCHN</p>
+    <div class="max-w-6xl mx-auto px-4 pt-6">
+        
+        <div class="flex flex-col md:flex-row items-center justify-between bg-white rounded-xl shadow-sm p-6 mb-6 border border-slate-200">
+            <div class="flex items-center space-x-5">
+                <div class="h-20 w-auto flex items-center justify-center p-1">
+                    <img src="https://raw.githubusercontent.com/duongcanhquan/image/main/logo%20vietmy.webp" alt="Logo Việt Mỹ Hà Nội" class="h-full object-contain">
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 uppercase tracking-tight">Cổng Dịch Vụ Nhân Sự</h1>
+                    <p class="text-sm text-slate-500">Trường Cao Đẳng Việt Mỹ Hà Nội</p>
+                </div>
+            </div>
+            <div class="mt-4 md:mt-0 text-right hidden md:block">
+                <div class="text-sm font-semibold text-blue-800" id="currentDate"></div>
+                <div class="text-xs text-slate-400">Version 2.6</div>
+            </div>
         </div>
 
-        <div class="form-padding">
-            <form id="hrForm" autocomplete="off">
-                
-                <div class="section-header">1. Thông tin cá nhân / Personal Info</div>
-                <div class="row g-3">
-                    <div class="col-12 col-md-6">
-                        <label class="form-label">Họ và tên / Full Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="ho_ten" placeholder="Nhập chữ in hoa..." required style="text-transform: uppercase;">
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label">Giới tính / Gender <span class="text-danger">*</span></label>
-                        <select class="form-select" name="gioi_tinh" required>
-                            <option value="">--Chọn--</option>
-                            <option value="Nam">Nam / Male</option>
-                            <option value="Nữ">Nữ / Female</option>
-                        </select>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label">Quốc tịch</label>
-                        <input type="text" class="form-control" name="quoc_tich" value="Việt Nam">
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label class="form-label">Ngày sinh / DOB <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control" name="ngay_sinh" required>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label class="form-label">Nơi sinh / Place of Birth</label>
-                        <input type="text" class="form-control" name="noi_sinh">
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label class="form-label">Số điện thoại / Phone <span class="text-danger">*</span></label>
-                        <input type="tel" class="form-control" name="so_dien_thoai" required>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label class="form-label">Email cá nhân <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" name="email" required>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label class="form-label">Tình trạng hôn nhân</label>
-                        <select class="form-select" name="hon_nhan">
-                            <option value="Độc thân">Độc thân / Single</option>
-                            <option value="Đã kết hôn">Đã kết hôn / Married</option>
-                            <option value="Ly hôn">Ly hôn / Divorced</option>
-                        </select>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Địa chỉ thường trú / Permanent Address</label>
-                        <input type="text" class="form-control" name="dia_chi_thuong_tru">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Nơi ở hiện tại / Current Address</label>
-                        <input type="text" class="form-control" name="noi_o_hien_tai">
-                    </div>
-                </div>
+        <div class="tab-nav grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 no-print">
+            <button onclick="switchTab('tab-attendance')" id="btn-tab-attendance" class="tab-btn active bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center"><i class="fas fa-clipboard-check text-lg"></i></div>
+                <div class="text-left"><div class="font-bold text-sm uppercase">Xác Nhận Công</div><div class="text-xs text-slate-500">Quên chấm công, lỗi máy</div></div>
+            </button>
+            <button onclick="switchTab('tab-ot')" id="btn-tab-ot" class="tab-btn bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center"><i class="fas fa-clock text-lg"></i></div>
+                <div class="text-left"><div class="font-bold text-sm uppercase">Làm Thêm Giờ</div><div class="text-xs text-slate-500">Đăng ký tăng ca (OT)</div></div>
+            </button>
+            <button onclick="switchTab('tab-leave')" id="btn-tab-leave" class="tab-btn bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center"><i class="fas fa-plane-departure text-lg"></i></div>
+                <div class="text-left"><div class="font-bold text-sm uppercase">Xin Nghỉ Phép</div><div class="text-xs text-slate-500">Phép năm, ốm, việc riêng</div></div>
+            </button>
+        </div>
 
-                <div class="section-header">2. Giấy tờ tùy thân / ID Card</div>
-                <div class="row g-3">
-                    <div class="col-12 col-md-4">
-                        <label class="form-label">Số CCCD / ID Number <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="so_cccd" required>
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <label class="form-label">Ngày Cấp</label>
-                        <input type="date" class="form-control" name="ngay_cap_cccd">
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <label class="form-label">Nơi cấp</label>
-                        <input type="text" class="form-control" name="noi_cap_cccd">
-                    </div>
-                </div>
+        <div class="bg-white shadow-xl rounded-xl border border-slate-200 overflow-hidden relative min-h-[600px]">
+            
+            <div id="loading" class="hidden loading-overlay absolute inset-0 z-50 flex flex-col items-center justify-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600 mb-4"></div>
+                <p class="text-lg font-bold text-blue-900 animate-pulse">Đang gửi dữ liệu lên hệ thống...</p>
+                <p class="text-sm text-slate-500">Vui lòng đợi giây lát</p>
+            </div>
 
-                <div class="section-header">3. Trình độ học vấn / Education</div>
-                <div class="row g-3">
-                    <div class="col-12 col-md-4">
-                        <label class="form-label">Trình độ cao nhất</label>
-                        <select class="form-select" name="trinh_do">
-                            <option value="Đại học">Đại học</option>
-                            <option value="Cao đẳng">Cao đẳng</option>
-                            <option value="Thạc Sỹ">Thạc Sỹ</option>
-                            <option value="Tiến Sỹ">Tiến Sỹ</option>
-                            <option value="Khác">Khác</option>
-                        </select>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <label class="form-label">Chuyên ngành</label>
-                        <input type="text" class="form-control" name="chuyen_nganh">
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <label class="form-label">Trường đào tạo</label>
-                        <input type="text" class="form-control" name="truong_dao_tao">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Bằng cấp khác (nếu có)</label>
-                        <input type="text" class="form-control" name="bang_cap_khac">
-                    </div>
-                </div>
-
-                <div class="section-header">4. Tài chính & Pháp lý / Finance & Legal</div>
-                <div class="row g-3">
-                    <div class="col-12 col-md-4">
-                        <label class="form-label">Tên chủ tài khoản</label>
-                        <input type="text" class="form-control" name="ten_tk_ngan_hang" style="text-transform: uppercase;">
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <label class="form-label">Số tài khoản</label>
-                        <input type="text" class="form-control" name="so_tk_ngan_hang">
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <label class="form-label">Ngân hàng - Chi nhánh</label>
-                        <input type="text" class="form-control" name="chi_nhanh_ngan_hang" placeholder="VD: VCB - CN Ba Đình">
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <label class="form-label">Mã số thuế cá nhân</label>
-                        <input type="text" class="form-control" name="mst_ca_nhan">
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <label class="form-label">Nơi cấp MST</label>
-                        <input type="text" class="form-control" name="noi_cap_mst">
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <label class="form-label">Ngày cấp MST</label>
-                        <input type="date" class="form-control" name="ngay_cap_mst">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Số sổ BHXH (Nếu có)</label>
-                        <input type="text" class="form-control" name="so_bhxh" placeholder="Giảng viên thỉnh giảng bỏ qua">
-                    </div>
-                </div>
-
-                <div class="section-header">5. Gia đình / Family</div>
-                <div class="mb-3">
-                    <label class="form-label text-primary fw-bold">Thông tin con (Họ tên - Ngày sinh)</label>
-                    <div class="row g-2">
-                        <div class="col-12"><input type="text" class="form-control" name="con_1" placeholder="Con 1..."></div>
-                        <div class="col-12"><input type="text" class="form-control" name="con_2" placeholder="Con 2..."></div>
-                        <div class="col-12"><input type="text" class="form-control" name="con_3" placeholder="Con 3..."></div>
-                    </div>
+            <div id="tab-attendance" class="tab-content p-6 md:p-10 block">
+                <div class="border-b-2 border-blue-800 pb-4 mb-8 flex justify-between items-end">
+                    <h2 class="text-2xl font-bold text-blue-900 uppercase">Đơn Xác Nhận Ngày Công</h2>
+                    <span class="text-xs font-bold text-white bg-blue-800 px-3 py-1 rounded-full">Mẫu HC-01</span>
                 </div>
                 
-                <div class="mb-3">
-                     <label class="form-label text-primary fw-bold">Người phụ thuộc (Giảm trừ gia cảnh)</label>
-                     <div class="card p-2 bg-light mb-2">
-                        <div class="row g-2">
-                            <div class="col-12"><input type="text" class="form-control form-control-sm" name="npt_1_ten" placeholder="Họ tên NPT 1"></div>
-                            <div class="col-6"><input type="text" class="form-control form-control-sm" name="npt_1_mst" placeholder="MST NPT 1"></div>
-                            <div class="col-6"><input type="text" class="form-control form-control-sm" name="npt_1_qh" placeholder="Mối quan hệ"></div>
-                        </div>
-                     </div>
-                     <div class="card p-2 bg-light">
-                        <div class="row g-2">
-                            <div class="col-12"><input type="text" class="form-control form-control-sm" name="npt_2_ten" placeholder="Họ tên NPT 2"></div>
-                            <div class="col-6"><input type="text" class="form-control form-control-sm" name="npt_2_mst" placeholder="MST NPT 2"></div>
-                            <div class="col-6"><input type="text" class="form-control form-control-sm" name="npt_2_qh" placeholder="Mối quan hệ"></div>
-                        </div>
-                     </div>
-                </div>
+                <form onsubmit="handleSubmit(event, 'xac_nhan_cong')">
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 mb-8">
+                        <h3 class="font-bold text-slate-700 mb-4 flex items-center"><i class="fas fa-user-circle mr-2 text-blue-600"></i>Thông tin nhân viên</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Họ và tên *</label><input type="text" id="att_name" required class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Mã NV (ID) *</label><input type="text" id="att_id" required class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Chức danh</label><input type="text" id="att_title" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm"></div>
+                            
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Bộ phận / Khoa *</label><input type="text" id="att_dept" required class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Người phụ trách</label><input type="text" id="att_charge_dept" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Cơ sở làm việc</label>
+                                <select id="att_base" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm"><option value="Đinh Lê Campus">Cơ sở Đinh Lê</option><option value="Cau Giấy Campus">Cơ sở Cầu Giấy</option></select>
+                            </div>
 
-                <div class="col-12">
-                    <label class="form-label text-danger fw-bold">Liên hệ khẩn cấp / Emergency Contact <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="lien_he_khan_cap" placeholder="Tên - SĐT - Mối quan hệ" required>
-                </div>
-
-                <div class="section-header">6. Công việc & Hồ sơ / Job & Docs</div>
-                <div class="row g-3">
-                    <div class="col-12 col-md-6">
-                        <label class="form-label">Loại hợp đồng / Contract Type</label>
-                        <select class="form-select" name="loai_hop_dong" id="contractType" onchange="checkContractType()">
-                            <option value="Hợp đồng thỉnh giảng">Hợp đồng thỉnh giảng</option>
-                            <option value="Hợp đồng chính thức">Hợp đồng chính thức</option>
-                            <option value="Khác">Khác</option>
-                        </select>
-                        <input type="text" class="form-control mt-2 d-none" name="loai_hop_dong_khac" id="otherContract" placeholder="Nhập loại hợp đồng...">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Email của bạn (Nhận KQ) *</label><input type="email" id="att_email" required class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm"></div>
+                            <div class="lg:col-span-2"><label class="text-xs font-bold text-red-500 uppercase block mb-1">Email Quản lý (Người duyệt) *</label><input type="email" id="att_manager_email" required class="w-full border border-red-200 bg-red-50 text-red-700 rounded-lg px-3 py-2 text-sm outline-none placeholder-red-300 shadow-sm" placeholder="Nhap email sếp vào đây..."></div>
+                        </div>
                     </div>
-                    <div class="col-12 col-md-6">
-                        <label class="form-label">Phòng ban / Department</label>
-                        <select class="form-select" name="phong_ban">
-                            <option value="Phòng NSVH">Phòng NSVH</option>
-                            <option value="Phòng MKT">Phòng MKT</option>
-                            <option value="Phòng Kinh doanh">Phòng Kinh doanh</option>
-                            <option value="Phòng Đào tạo">Phòng Đào tạo</option>
-                            <option value="Ban Lãnh Đạo">Ban Lãnh Đạo</option>
-                            <option value="Phòng Tuyển sinh">Phòng Tuyển sinh</option>
-                            <option value="Phòng Kế toán">Phòng Kế toán</option>
-                            <option value="Thư ký khoa">Thư ký khoa</option>
-                            <option value="Khoa CH">Khoa CH</option>
-                            <option value="Khoa BCH">Khoa BCH</option>
-                        </select>
+
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-slate-800 text-lg">Chi tiết ngày công xác nhận</h3>
+                        <button type="button" onclick="addRow()" class="no-print bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition flex items-center"><i class="fas fa-plus mr-2"></i> Thêm dòng</button>
                     </div>
                     
-                    <div class="col-12 mt-4">
-                        <div class="p-3 border border-primary border-2 border-dashed rounded text-center bg-white">
-                            <label class="form-label fw-bold mb-2">Ảnh hồ sơ cá nhân / Photos (Tối đa 5 ảnh) <span class="text-danger">*</span></label>
-                            <input type="file" class="form-control" id="fileInput" multiple accept="image/*" required>
-                            <small class="text-muted d-block mt-2">Chấp nhận: JPG, PNG, WEBP. Hệ thống tự tạo thư mục lưu trữ.</small>
+                    <div class="overflow-x-auto table-wrap border rounded-lg mb-8 shadow-sm">
+                        <table class="min-w-full divide-y divide-slate-200 text-sm hidden md:table">
+                            <thead class="bg-slate-100 font-bold text-slate-600">
+                                <tr>
+                                    <th class="px-3 py-3 text-left min-w-[130px]" rowspan="2">Ngày</th>
+                                    <th class="px-2 py-3 w-48 text-center" colspan="2">Giờ thực tế</th>
+                                    <th class="px-2 py-3 bg-blue-50 text-blue-700 w-48 text-center" colspan="2">Giờ chấm công (CC)</th>
+                                    <th class="px-2 py-3 w-20 text-center" rowspan="2">Công</th>
+                                    <th class="px-2 py-3 w-24" rowspan="2">Hình thức</th>
+                                    <th class="px-2 py-3 min-w-[200px]" rowspan="2">Lý do / Giải trình</th>
+                                    <th class="px-2 py-3 no-print w-10 text-center" rowspan="2">Xóa</th>
+                                </tr>
+                                <tr>
+                                    <th class="px-2 py-1 w-24 border-t border-slate-200">Vào</th>
+                                    <th class="px-2 py-1 w-24 border-t border-slate-200">Ra</th>
+                                    <th class="px-2 py-1 w-24 border-t border-blue-100 bg-blue-50 text-blue-700">Vào</th>
+                                    <th class="px-2 py-1 w-24 border-t border-blue-100 bg-blue-50 text-blue-700">Ra</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-table-body" class="divide-y divide-slate-200 bg-white attendance-table-body"></tbody>
+                        </table>
+
+                        <div id="attendance-mobile-container" class="block md:hidden"></div>
+                    </div>
+
+                    <div class="flex justify-end no-print pt-6 border-t border-slate-100">
+                        <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1 flex items-center">
+                            <i class="fas fa-paper-plane mr-2"></i> GỬI XÁC NHẬN
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="tab-ot" class="tab-content p-6 md:p-10 hidden">
+                <div class="border-b-2 border-orange-500 pb-4 mb-8 flex justify-between items-end">
+                    <h2 class="text-2xl font-bold text-orange-600 uppercase">Đăng Ký Làm Thêm (OT)</h2>
+                    <span class="text-xs font-bold text-white bg-orange-600 px-3 py-1 rounded-full">Mẫu OT-02</span>
+                </div>
+                
+                <form onsubmit="handleSubmit(event, 'lam_them')">
+                    <div class="bg-orange-50 p-6 rounded-xl border border-orange-100 mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Họ và tên *</label><input type="text" id="ot_name" required class="w-full border border-orange-200 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-orange-400"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Email của bạn *</label><input type="email" id="ot_email" required class="w-full border border-orange-200 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-orange-400"></div>
+                        </div>
+                        <div class="space-y-4">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Bộ phận *</label><input type="text" id="ot_dept" required class="w-full border border-orange-200 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-orange-400"></div>
+                            <div><label class="text-xs font-bold text-red-500 uppercase block mb-1">Email Quản lý *</label><input type="email" id="ot_manager_email" required class="w-full border border-red-200 bg-white rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-400"></div>
                         </div>
                     </div>
+
+                    <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Căn cứ (Theo kế hoạch/Dự án nào) *</label>
+                            <input type="text" id="ot_basis" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-orange-400" placeholder="VD: Theo kế hoạch dự án tuyển sinh...">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Đề xuất (Nghỉ bù/Trả lương) *</label>
+                            <input type="text" id="ot_proposal" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white outline-none focus:ring-2 focus:ring-orange-400" placeholder="VD: Đề xuất nghỉ bù vào tuần sau">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-orange-800 text-lg">Chi tiết ca làm việc</h3>
+                        <button type="button" onclick="addOTRow()" class="no-print bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition flex items-center"><i class="fas fa-plus mr-2"></i> Thêm ca</button>
+                    </div>
+                    
+                    <div id="ot-list-container" class="space-y-4 mb-6"></div> 
+
+                    <div class="bg-orange-100 p-5 rounded-lg border border-orange-200 flex justify-between items-center mb-6">
+                        <span class="font-bold text-orange-900 uppercase">TỔNG THỜI GIAN OT:</span>
+                        <span class="text-3xl font-bold text-orange-700"><span id="ot-total-hours">0</span> <span class="text-sm">giờ</span></span>
+                    </div>
+
+                    <div class="mb-6"><label class="text-sm font-bold text-slate-700 block mb-2">Lý do / Ghi chú</label><textarea id="ot_note" class="w-full border rounded-lg p-3 h-24 outline-none focus:ring-2 focus:ring-orange-400" placeholder="VD: Deadline dự án X..."></textarea></div>
+
+                    <div class="flex justify-end no-print pt-6 border-t border-slate-100">
+                        <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1 flex items-center">
+                            <i class="fas fa-paper-plane mr-2"></i> GỬI ĐĂNG KÝ
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="tab-leave" class="tab-content p-6 md:p-10 hidden">
+                <div class="border-b-2 border-green-600 pb-4 mb-8 flex justify-between items-end">
+                    <h2 class="text-2xl font-bold text-green-700 uppercase">Đơn Xin Nghỉ Phép</h2>
+                    <span class="text-xs font-bold text-white bg-green-600 px-3 py-1 rounded-full">Mẫu LEAVE-03</span>
                 </div>
 
-                <div class="btn-submit-wrapper">
-                    <button type="button" class="btn btn-primary btn-submit" id="btnSubmit" onclick="submitForm()">GỬI HỒ SƠ / SUBMIT</button>
-                </div>
+                <form onsubmit="handleSubmit(event, 'nghi_phep')">
+                    <div class="bg-green-50 p-6 rounded-xl border border-green-100 mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Họ và tên *</label><input type="text" id="leave_name" required class="w-full bg-white border border-green-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Email của bạn *</label><input type="email" id="leave_email" required class="w-full bg-white border border-green-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                            <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Chức vụ *</label><input type="text" id="leave_title" required class="w-full bg-white border border-green-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                        </div>
+                        <div class="space-y-4">
+                             <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Bộ phận *</label><input type="text" id="leave_dept" required class="w-full bg-white border border-green-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                             <div><label class="text-xs font-bold text-red-500 uppercase block mb-1">Email Quản lý *</label><input type="email" id="leave_manager_email" required class="w-full bg-white border border-red-200 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                        </div>
+                    </div>
 
-            </form>
+                    <h3 class="font-bold text-green-800 mb-3">1. Loại nghỉ phép</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <label class="cursor-pointer group"><input type="radio" name="leaveType" class="peer sr-only" value="Phép năm" required><div class="p-3 border rounded-lg hover:bg-green-50 peer-checked:bg-green-100 peer-checked:border-green-600 peer-checked:text-green-800 transition flex items-center justify-center font-medium"><i class="far fa-calendar-check mr-2"></i>Phép năm</div></label>
+                        <label class="cursor-pointer group"><input type="radio" name="leaveType" class="peer sr-only" value="Nghỉ ốm"><div class="p-3 border rounded-lg hover:bg-green-50 peer-checked:bg-green-100 peer-checked:border-green-600 peer-checked:text-green-800 transition flex items-center justify-center font-medium"><i class="fas fa-procedures mr-2"></i>Nghỉ ốm</div></label>
+                        <label class="cursor-pointer group"><input type="radio" name="leaveType" class="peer sr-only" value="Việc riêng"><div class="p-3 border rounded-lg hover:bg-green-50 peer-checked:bg-green-100 peer-checked:border-green-600 peer-checked:text-green-800 transition flex items-center justify-center font-medium"><i class="fas fa-user-clock mr-2"></i>Việc riêng</div></label>
+                        <label class="cursor-pointer group"><input type="radio" name="leaveType" class="peer sr-only" value="Không lương"><div class="p-3 border rounded-lg hover:bg-green-50 peer-checked:bg-green-100 peer-checked:border-green-600 peer-checked:text-green-800 transition flex items-center justify-center font-medium"><i class="fas fa-wallet mr-2"></i>Không lương</div></label>
+                    </div>
+
+                    <h3 class="font-bold text-green-800 mb-3">2. Thời gian nghỉ</h3>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 items-end mb-6">
+                        <div><label class="text-sm font-bold text-slate-700 block mb-1">Từ ngày</label><input type="date" id="leaveStartDate" onchange="calcLeave()" required class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                        <div><label class="text-sm font-bold text-slate-700 block mb-1">Đến ngày</label><input type="date" id="leaveEndDate" onchange="calcLeave()" required class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-green-400"></div>
+                        <div class="bg-green-50 p-2 rounded-lg text-center border border-green-200">
+                            <label class="text-xs font-bold text-green-800 uppercase">Tổng cộng</label>
+                            <div class="text-3xl font-bold text-green-700"><input type="number" id="leaveTotalDays" value="0" readonly class="w-20 text-center bg-transparent outline-none"> <span class="text-sm">ngày</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6"><label class="text-sm font-bold text-slate-700 block mb-2">Lý do nghỉ (Ghi rõ)</label><textarea id="leave_reason" required class="w-full border rounded-lg p-3 h-24 outline-none focus:ring-2 focus:ring-green-400" placeholder="Vui lòng ghi rõ lý do..."></textarea></div>
+
+                    <div class="flex justify-end no-print pt-6 border-t border-slate-100">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1 flex items-center">
+                            <i class="fas fa-paper-plane mr-2"></i> GỬI ĐƠN NGHỈ
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
+        
+        <div class="text-center text-slate-400 text-sm mt-8 pb-8 no-print">@2025 Trường Cao Đẳng Việt Mỹ Hà Nội</div>
     </div>
 
-    <div id="loadingOverlay" class="loading-overlay d-none">
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
-        <h5 class="mt-3 text-primary" id="loadingText">Đang xử lý dữ liệu...</h5>
-        <p class="text-muted small">Vui lòng không tắt trình duyệt.</p>
+    <div id="successModal" class="fixed inset-0 bg-slate-900 bg-opacity-70 hidden flex items-center justify-center z-50 px-4 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center transform transition-all scale-100">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-green-50">
+                <i class="fas fa-check text-green-600 text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Thành công!</h3>
+            <p class="text-slate-600 mb-6">Đơn của bạn đã được gửi đến quản lý để phê duyệt.</p>
+            <button onclick="document.getElementById('successModal').classList.add('hidden')" class="w-full bg-blue-900 text-white py-3 rounded-xl font-bold hover:bg-blue-800 transition shadow-lg">Đóng cửa sổ</button>
+        </div>
     </div>
 
     <script>
-        function checkContractType() {
-            const select = document.getElementById('contractType');
-            const otherInput = document.getElementById('otherContract');
-            if (select.value === 'Khác') {
-                otherInput.classList.remove('d-none');
-                otherInput.required = true;
-            } else {
-                otherInput.classList.add('d-none');
-                otherInput.required = false;
-            }
+        // ====================================================================
+        // QUAN TRỌNG: THAY LINK WEBHOOK N8N CỦA BẠN VÀO DÒNG DƯỚI ĐÂY
+        const N8N_WEBHOOK_URL = 'https://apchn-host.lapage.vn/webhook/submit-portal'; 
+        // ====================================================================
+
+        // --- 1. KHỞI TẠO ---
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            addRow(); // Thêm 1 dòng trống mặc định
+            addOTRow(); // Thêm 1 ca OT mặc định
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => { el.classList.remove('block'); el.classList.add('hidden'); });
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(tabId).classList.add('block');
+            document.getElementById('btn-' + tabId).classList.add('active');
         }
 
-        function submitForm() {
-            const form = document.getElementById('hrForm');
-            // Kiểm tra validate HTML5 (Required fields)
-            if (!form.checkValidity()) {
-                form.reportValidity(); // Hiển thị lỗi đỏ
-                return;
-            }
+        // --- 2. LOGIC BẢNG XÁC NHẬN CÔNG (TỐI ƯU CẢ MOBILE & DESKTOP) ---
+        function addRow() {
+            const tbody = document.getElementById('attendance-table-body');
+            const mobileContainer = document.getElementById('attendance-mobile-container');
+            const uniqueId = Date.now(); // ID duy nhất cho mỗi cặp Row/Card
 
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const loadingText = document.getElementById('loadingText');
+            // Logic cho DESKTOP (Row chính trong Table - Dùng 1 dòng duy nhất để tránh lỗi lệch cột)
+            const rowTable = document.createElement('tr');
+            rowTable.className = 'attendance-row border-t border-slate-200';
+            rowTable.id = `row-${uniqueId}`; // Gán ID cho Desktop Row
+
+            // <tr> Dòng 1: Đưa tất cả input vào 1 hàng duy nhất
+            rowTable.innerHTML = `
+                <td class="p-2">
+                    <input type="date" class="item-date w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent">
+                </td>
+                <td class="p-2">
+                    <input type="time" class="item-in w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)">
+                </td>
+                <td class="p-2">
+                    <input type="time" class="item-out w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)">
+                </td>
+                <td class="p-2 bg-blue-50">
+                    <input type="time" class="item-cc-in w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700">
+                </td>
+                <td class="p-2 bg-blue-50">
+                    <input type="time" class="item-cc-out w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700">
+                </td>
+                <td class="p-2 text-center">
+                    <input type="text" name="tong_cong_calc" placeholder="0" class="item-total w-full border-b outline-none text-sm py-1 bg-transparent text-center font-bold text-blue-600" readonly>
+                </td>
+                <td class="p-2">
+                    <input type="text" placeholder="HC" class="item-type w-full border-b outline-none text-sm py-1 bg-transparent">
+                </td>
+                <td class="p-2">
+                    <input type="text" class="item-reason w-full border-b outline-none text-sm py-1 bg-transparent" placeholder="...">
+                </td>
+                <td class="p-2 text-center no-print">
+                    <button type="button" onclick="removeRow(this)" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            `;
+            tbody.appendChild(rowTable);
+
+            // Logic cho MOBILE (Cards)
+            const rowMobile = document.createElement('div');
+            rowMobile.className = 'attendance-card border border-slate-300 rounded-lg p-4 mb-4';
+            rowMobile.id = `card-${uniqueId}`; // Gán ID cho Mobile Card
+            rowMobile.innerHTML = `
+                <div class="flex justify-between items-center mb-3 border-b pb-2">
+                    <span class="text-sm font-bold text-blue-800">Đơn ngày:</span>
+                    <button type="button" onclick="removeCard(this)" class="no-print text-slate-400 hover:text-red-500 transition"><i class="fas fa-times"></i> Xóa</button>
+                </div>
+
+                <div class="mb-3">
+                    <span class="mobile-label">1. Ngày đăng ký *</span>
+                    <input type="date" class="item-date w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent">
+                </div>
+
+                <div class="input-group">
+                    <div><span class="mobile-label">2. Giờ vào (Thực tế)</span><input type="time" class="item-in w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)"></div>
+                    <div><span class="mobile-label">Giờ ra (Thực tế)</span><input type="time" class="item-out w-full border-b focus:border-blue-500 outline-none text-sm py-1 bg-transparent" onchange="calcAttendance(this)"></div>
+                </div>
+
+                <div class="input-group bg-blue-50 p-2 rounded-lg my-3">
+                    <div><span class="mobile-label mobile-label-cc">3. CC Vào (Máy)</span><input type="time" class="item-cc-in w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700"></div>
+                    <div><span class="mobile-label mobile-label-cc">CC Ra (Máy)</span><input type="time" class="item-cc-out w-full border-b border-blue-300 outline-none text-sm py-1 bg-transparent text-blue-700"></div>
+                </div>
+
+                <div class="mb-3">
+                    <span class="mobile-label">4. CÔNG (Tự động tính)</span>
+                    <input type="text" name="tong_cong_calc" placeholder="0" class="item-total w-full border-b outline-none text-sm py-1 bg-transparent text-left font-bold text-blue-600 text-2xl" readonly>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="mobile-label">5. Hình thức</span>
+                    <input type="text" placeholder="HC" class="item-type w-full border-b outline-none text-sm py-1 bg-transparent">
+                </div>
+                
+                <div class="mb-0">
+                    <span class="mobile-label">6. Lý do / Giải trình</span>
+                    <input type="text" class="item-reason w-full border-b outline-none text-sm py-1 bg-transparent" placeholder="...">
+                </div>
+            `;
+            mobileContainer.appendChild(rowMobile);
             
-            // Hiện loading
-            loadingOverlay.classList.remove('d-none');
-            loadingText.innerText = "Đang lưu thông tin cá nhân...";
+            // Đồng bộ giữa hai phiên bản (RẤT QUAN TRỌNG)
+            const mobileInputs = rowMobile.querySelectorAll('input');
+            const tableInputs = rowTable.querySelectorAll('input');
 
-            // Gọi hàm Google Script để lưu text
-            google.script.run.withSuccessHandler(function(response) {
-                if (response.status === 'SUCCESS') {
-                    loadingText.innerText = "Đang tải ảnh lên (Step 2/2)...";
-                    // Sau khi có ID folder, tiến hành upload ảnh
-                    uploadPhotos(response.folderId);
-                } else {
-                    alert('Lỗi hệ thống: ' + response.message);
-                    loadingOverlay.classList.add('d-none');
+            // Gán data-linked-id để Javascript biết đối tượng nào liên kết với nhau
+            rowTable.dataset.linkedCard = rowMobile.id;
+            rowMobile.dataset.linkedRow = rowTable.id;
+
+            // Đồng bộ giá trị và sự kiện
+            mobileInputs.forEach((mInput, i) => {
+                const tInput = tableInputs[i];
+
+                // Khi thay đổi trên Mobile -> nhảy sang Desktop
+                mInput.addEventListener('input', () => { 
+                    tInput.value = mInput.value; 
+                    tInput.dispatchEvent(new Event('change')); 
+                });
+                // Khi thay đổi trên Desktop -> nhảy sang Mobile
+                tInput.addEventListener('input', () => { 
+                    mInput.value = tInput.value; 
+                    mInput.dispatchEvent(new Event('change')); 
+                });
+
+                // Đồng bộ logic tính công 
+                if (mInput.classList.contains('item-in') || mInput.classList.contains('item-out')) {
+                    mInput.addEventListener('change', () => calcAttendance(mInput));
+                    tInput.addEventListener('change', () => calcAttendance(tInput));
                 }
-            }).processForm(form);
-        }
-
-        function uploadPhotos(folderId) {
-            const fileInput = document.getElementById('fileInput');
-            const files = fileInput.files;
-            let uploadedCount = 0;
-            const totalFiles = files.length;
-
-            if (totalFiles === 0) {
-                finishSubmission();
-                return;
-            }
-
-            // Loop qua từng file để convert và gửi
-            Array.from(files).forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const data = e.target.result; // Base64
-                    
-                    // Cập nhật text loading
-                    document.getElementById('loadingText').innerText = `Đang tải ảnh ${index + 1}/${totalFiles}...`;
-
-                    google.script.run.withSuccessHandler(function() {
-                        uploadedCount++;
-                        if (uploadedCount === totalFiles) {
-                            finishSubmission();
-                        }
-                    }).uploadFilesToFolder(data, folderId, file.name);
-                };
-                reader.readAsDataURL(file);
             });
         }
 
-        function finishSubmission() {
-            document.getElementById('loadingOverlay').classList.add('d-none');
-            alert("✅ XONG! Cảm ơn bạn đã gửi hồ sơ thành công.");
-            document.getElementById('hrForm').reset();
-            window.scrollTo(0, 0); // Cuộn lên đầu
+        // Hàm xóa đồng thời (cho nút Xóa trên Desktop)
+        function removeRow(btn) {
+            const rowTable = btn.closest('tr');
+            const linkedCardId = rowTable.dataset.linkedCard;
+            const linkedCard = document.getElementById(linkedCardId);
+            
+            rowTable.remove();
+            if (linkedCard) linkedCard.remove();
+
+            // Nếu không còn dòng nào, thêm lại 1 dòng mặc định
+            if (document.getElementById('attendance-table-body').children.length === 0) {
+                addRow();
+            }
+        }
+
+        // Hàm xóa đồng thời (cho nút Xóa trên Mobile Card)
+        function removeCard(btn) {
+            const rowMobile = btn.closest('.attendance-card');
+            const linkedRowId = rowMobile.dataset.linkedRow;
+            const linkedRow = document.getElementById(linkedRowId);
+            
+            rowMobile.remove();
+            if (linkedRow) linkedRow.remove();
+
+            // Nếu không còn dòng nào, thêm lại 1 dòng mặc định
+            if (document.getElementById('attendance-mobile-container').children.length === 0) {
+                addRow();
+            }
+        }
+
+        // === HÀM TÍNH CÔNG TỰ ĐỘNG ===
+        function calcAttendance(input) {
+            // Xác định xem Input đến từ phiên bản Table hay Mobile Card
+            const isMobile = input.closest('.attendance-card');
+            const container = isMobile ? input.closest('.attendance-card') : input.closest('tr');
+            
+            // Lấy giá trị từ container hiện tại
+            const inTime = container.querySelector('.item-in').value;
+            const outTime = container.querySelector('.item-out').value;
+            
+            if (inTime && outTime) {
+                const [h1, m1] = inTime.split(':').map(Number);
+                const [h2, m2] = outTime.split(':').map(Number);
+                
+                let minutes = (h2 * 60 + m2) - (h1 * 60 + m1);
+
+                // Logic trừ nghỉ trưa: Nếu làm > 5 tiếng (300p) thì trừ 60p
+                if (minutes > 300) {
+                    minutes = minutes - 60;
+                }
+
+                if (minutes > 0) {
+                    const hours = minutes / 60;
+                    let cong = 0;
+
+                    if (hours >= 8) cong = 1;
+                    else if (hours >= 4) cong = 0.5;
+                    else cong = (hours / 8).toFixed(2); 
+                    
+                    // Cập nhật giá trị vào cả hai phiên bản (Desktop và Mobile)
+                    document.querySelectorAll(`.item-total[name="tong_cong_calc"]`).forEach(el => {
+                        // Chỉ cập nhật input item-total trong row hoặc card hiện tại đang được chỉnh sửa
+                        if (el.closest(`#${container.id}`) || el.closest(`#${isMobile ? container.dataset.linkedRow : container.dataset.linkedCard}`)) {
+                             el.value = cong;
+                        }
+                    });
+
+                } else {
+                    document.querySelectorAll(`.item-total[name="tong_cong_calc"]`).forEach(el => {
+                         if (el.closest(`#${container.id}`) || el.closest(`#${isMobile ? container.dataset.linkedRow : container.dataset.linkedCard}`)) {
+                             el.value = 0;
+                        }
+                    });
+                }
+            }
+        }
+        
+        // --- 3. LOGIC BẢNG OT (KHÔNG ĐỔI) ---
+        function addOTRow() {
+            const container = document.getElementById('ot-list-container');
+            const item = document.createElement('div');
+            item.className = 'ot-item bg-white border border-slate-200 rounded-lg p-4 shadow-sm relative mb-3';
+            const today = new Date().toISOString().split('T')[0];
+            item.innerHTML = `
+                <button type="button" onclick="removeOT(this)" class="absolute top-2 right-2 text-slate-400 hover:text-red-500 p-1 transition"><i class="fas fa-times"></i></button>
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
+                    <div class="md:col-span-5 bg-slate-50 p-2 rounded"><label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Bắt đầu</label><div class="flex gap-2"><input type="time" onchange="calcOT(this)" class="ot-start-time w-1/2 border rounded px-1 text-sm bg-white"><input type="date" onchange="calcOT(this)" value="${today}" class="ot-start-date w-1/2 border rounded px-1 text-sm text-slate-600 bg-white"></div></div>
+                    <div class="md:col-span-5 bg-slate-50 p-2 rounded"><label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Kết thúc</label><div class="flex gap-2"><input type="time" onchange="calcOT(this)" class="ot-end-time w-1/2 border rounded px-1 text-sm bg-white"><input type="date" onchange="calcOT(this)" value="${today}" class="ot-end-date w-1/2 border rounded px-1 text-sm text-slate-600 bg-white"></div></div>
+                    <div class="md:col-span-2 flex flex-col justify-center items-center bg-orange-50 rounded border border-orange-100"><span class="text-2xl font-bold text-orange-600 row-hours">0</span><span class="text-[10px] uppercase font-bold text-orange-800">Giờ</span></div>
+                </div>
+                <input type="text" class="ot-project w-full border-b border-slate-200 focus:border-orange-500 outline-none py-1 text-sm" placeholder="Mô tả công việc (Dự án, task)...">
+            `;
+            container.appendChild(item);
+        }
+
+        function removeOT(btn) {
+            const list = document.getElementById('ot-list-container');
+            if(list.children.length > 1) { 
+                btn.closest('.ot-item').remove(); 
+                updateTotalOT(); 
+            } else { 
+                const item = btn.closest('.ot-item');
+                item.querySelectorAll('input').forEach(i => i.value = ''); 
+                item.querySelector('.row-hours').innerText = '0';
+                updateTotalOT();
+            }
+        }
+
+        function calcOT(inp) {
+            const row = inp.closest('.ot-item');
+            const sVal = row.querySelector('.ot-start-time').value;
+            const eVal = row.querySelector('.ot-end-time').value;
+            
+            if(sVal && eVal) {
+                const s = new Date(row.querySelector('.ot-start-date').value + 'T' + sVal);
+                const e = new Date(row.querySelector('.ot-end-date').value + 'T' + eVal);
+                let h = (e - s) / 36e5; 
+                row.querySelector('.row-hours').innerText = (h > 0) ? h.toFixed(1) : 0;
+                updateTotalOT();
+            }
+        }
+
+        function updateTotalOT() {
+            let total = 0;
+            document.querySelectorAll('.row-hours').forEach(el => total += parseFloat(el.innerText) || 0);
+            document.getElementById('ot-total-hours').innerText = total.toFixed(1);
+        }
+
+        // --- 4. LOGIC NGHỈ PHÉP (KHÔNG ĐỔI) ---
+        function calcLeave() {
+            const sStr = document.getElementById('leaveStartDate').value;
+            const eStr = document.getElementById('leaveEndDate').value;
+            if(sStr && eStr) {
+                const s = new Date(sStr); const e = new Date(eStr);
+                const diff = (e - s) / 864e5;
+                document.getElementById('leaveTotalDays').value = (diff >= 0) ? (diff + 1) : 0;
+            }
+        }
+
+        // --- 5. HÀM GỬI DỮ LIỆU (KHÔNG ĐỔI) ---
+        function handleSubmit(e, type) {
+            e.preventDefault();
+            const loading = document.getElementById('loading');
+            loading.classList.remove('hidden');
+
+            // Tạo Object dữ liệu
+            let data = { form_type: type, submitted_at: new Date().toISOString() };
+
+            if (type === 'xac_nhan_cong') {
+                data.ho_ten = document.getElementById('att_name').value;
+                data.email_nv = document.getElementById('att_email').value;
+                data.id_cc = document.getElementById('att_id').value;
+                data.bo_phan_phu_trach = document.getElementById('att_charge_dept').value;
+                data.chuc_danh = document.getElementById('att_title').value;
+                data.phong_ban = document.getElementById('att_dept').value;
+                data.co_so = document.getElementById('att_base').value;
+                data.email_quan_ly = document.getElementById('att_manager_email').value;
+                
+                data.chi_tiet = [];
+                // LẤY DỮ LIỆU TỪ BẢNG DESKTOP
+                document.querySelectorAll('#attendance-table-body tr').forEach(row => { 
+                    let d = row.querySelector('.item-date').value;
+                    if(d) data.chi_tiet.push({
+                        ngay: d, 
+                        gio_vao: row.querySelector('.item-in').value, 
+                        gio_ra: row.querySelector('.item-out').value,
+                        cc_vao: row.querySelector('.item-cc-in').value, 
+                        cc_ra: row.querySelector('.item-cc-out').value,
+                        tong: row.querySelector('.item-total').value, 
+                        hinh_thuc: row.querySelector('.item-type').value,
+                        ly_do: row.querySelector('.item-reason').value
+                    });
+                });
+            } 
+            else if (type === 'lam_them') {
+                data.ho_ten = document.getElementById('ot_name').value;
+                data.email_nv = document.getElementById('ot_email').value;
+                data.bo_phan = document.getElementById('ot_dept').value;
+                data.email_quan_ly = document.getElementById('ot_manager_email').value;
+                data.tong_gio = document.getElementById('ot-total-hours').innerText;
+                data.ghi_chu = document.getElementById('ot_note').value;
+                
+                data.can_cu = document.getElementById('ot_basis').value;
+                data.de_xuat = document.getElementById('ot_proposal').value;
+                
+                data.chi_tiet = [];
+                document.querySelectorAll('.ot-item').forEach(row => {
+                    let sd = row.querySelector('.ot-start-date').value; 
+                    let st = row.querySelector('.ot-start-time').value;
+                    if(sd && st) data.chi_tiet.push({
+                        bat_dau: sd + ' ' + st,
+                        ket_thuc: row.querySelector('.ot-end-date').value + ' ' + row.querySelector('.ot-end-time').value,
+                        so_gio: row.querySelector('.row-hours').innerText,
+                        cong_viec: row.querySelector('.ot-project').value
+                    });
+                });
+            }
+            else if (type === 'nghi_phep') {
+                data.ho_ten = document.getElementById('leave_name').value;
+                data.email_nv = document.getElementById('leave_email').value;
+                data.chuc_vu = document.getElementById('leave_title').value;
+                data.bo_phan = document.getElementById('leave_dept').value;
+                data.email_quan_ly = document.getElementById('leave_manager_email').value;
+                
+                let radio = document.querySelector('input[name="leaveType"]:checked');
+                data.loai_nghi = radio ? radio.value : '';
+                data.tu_ngay = document.getElementById('leaveStartDate').value;
+                data.den_ngay = document.getElementById('leaveEndDate').value;
+                data.tong_ngay = document.getElementById('leaveTotalDays').value;
+                data.ly_do = document.getElementById('leave_reason').value;
+            }
+
+            console.log('Sending Payload:', data);
+
+            // Gửi API
+            fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                loading.classList.add('hidden');
+                if(response.ok) {
+                    document.getElementById('successModal').classList.remove('hidden');
+                    e.target.reset(); // Xóa form
+                    // Reset giá trị mặc định
+                    if(type==='lam_them') document.getElementById('ot-total-hours').innerText='0';
+                    if(type==='nghi_phep') document.getElementById('leaveTotalDays').value='0';
+                } else {
+                    alert('Lỗi Server N8N: ' + response.status);
+                }
+            })
+            .catch(error => {
+                loading.classList.add('hidden');
+                alert('Lỗi kết nối N8N! Vui lòng kiểm tra lại đường dẫn Webhook.');
+                console.error('Error:', error);
+            });
         }
     </script>
 </body>
