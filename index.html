@@ -15,13 +15,7 @@
         #btn-tab-ot.active { color: #c2410c; }
         #btn-tab-leave.active { color: #15803d; }
         .loading-overlay { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(4px); }
-        @media (max-width: 768px) {
-            .attendance-table-body thead { display: none; }
-            .attendance-table-body tr { display: block; margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; border-radius: 8px; background-color: #fcfcfc; }
-            .attendance-table-body tr td { display: block; width: 100% !important; padding: 0 !important; border: none; }
-            .mobile-label { font-weight: bold; font-size: 11px; color: #475569; text-transform: uppercase; display: block; margin-top: 8px; }
-            .input-group-mobile { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        }
+        input[type="date"], input[type="time"] { padding: 4px; border-radius: 4px; border: 1px solid #ddd; }
     </style>
 </head>
 <body class="text-slate-800 pb-20">
@@ -31,125 +25,114 @@
             <div class="flex items-center space-x-5">
                 <img src="https://raw.githubusercontent.com/duongcanhquan/image/main/logo%20vietmy.webp" alt="Logo" class="h-20 object-contain">
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900 uppercase tracking-tight">Cổng Dịch Vụ Nhân Sự</h1>
+                    <h1 class="text-2xl font-bold text-slate-900 uppercase">Cổng Dịch Vụ Nhân Sự</h1>
                     <p class="text-sm text-slate-500">Trường Cao Đẳng Việt Mỹ Hà Nội</p>
                 </div>
             </div>
-            <div class="text-right hidden md:block">
+            <div class="text-right">
                 <div class="text-sm font-semibold text-blue-800" id="currentDate"></div>
-                <div class="text-xs text-slate-400">Version 3.0 (Smart Business Calendar)</div>
+                <div class="text-xs text-slate-400">Version 3.1 (Fix OT & Multi-Leave)</div>
             </div>
         </div>
 
         <div class="tab-nav grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 no-print">
             <button onclick="switchTab('tab-attendance')" id="btn-tab-attendance" class="tab-btn active bg-white p-4 rounded-lg shadow-sm border flex items-center gap-4">
                 <i class="fas fa-clipboard-check text-blue-700 text-lg"></i>
-                <div class="text-left"><div class="font-bold text-sm uppercase">Xác Nhận Công</div><div class="text-xs text-slate-500">Giờ thực tế, không tính CC</div></div>
+                <div class="text-left"><div class="font-bold text-sm uppercase">Xác Nhận Công</div><div class="text-xs text-slate-500">Giờ vào/ra thực tế</div></div>
             </button>
             <button onclick="switchTab('tab-ot')" id="btn-tab-ot" class="tab-btn bg-white p-4 rounded-lg shadow-sm border flex items-center gap-4">
                 <i class="fas fa-clock text-orange-700 text-lg"></i>
-                <div class="text-left"><div class="font-bold text-sm uppercase">Làm Thêm Giờ</div><div class="text-xs text-slate-500">Đăng ký tăng ca (OT)</div></div>
+                <div class="text-left"><div class="font-bold text-sm uppercase">Làm Thêm Giờ</div><div class="text-xs text-slate-500">Tự động tính giờ chuẩn</div></div>
             </button>
             <button onclick="switchTab('tab-leave')" id="btn-tab-leave" class="tab-btn bg-white p-4 rounded-lg shadow-sm border flex items-center gap-4">
-                <i class="fas fa-plane-departure text-green-700 text-lg"></i>
-                <div class="text-left"><div class="font-bold text-sm uppercase">Xin Nghỉ Phép</div><div class="text-xs text-slate-500">Tự động trừ Thứ 7, Chủ nhật</div></div>
+                <i class="fas fa-calendar-alt text-green-700 text-lg"></i>
+                <div class="text-left"><div class="font-bold text-sm uppercase">Xin Nghỉ Phép</div><div class="text-xs text-slate-500">Thêm nhiều ngày không liền nhau</div></div>
             </button>
         </div>
 
         <div class="bg-white shadow-xl rounded-xl border relative min-h-[600px]">
             <div id="loading" class="hidden loading-overlay absolute inset-0 z-50 flex flex-col items-center justify-center">
-                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600 mb-4"></div>
-                <p class="font-bold text-blue-900">Đang gửi dữ liệu...</p>
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 mb-4"></div>
+                <p class="font-bold text-blue-900">Đang xử lý dữ liệu...</p>
             </div>
 
             <div id="tab-attendance" class="tab-content p-6 md:p-10 block">
-                <h2 class="text-2xl font-bold text-blue-900 uppercase border-b-2 border-blue-800 pb-2 mb-6">Đơn Xác Nhận Ngày Công</h2>
+                <h2 class="text-xl font-bold text-blue-900 uppercase border-b-2 border-blue-800 pb-2 mb-6">Đơn Xác Nhận Ngày Công</h2>
                 <form onsubmit="handleSubmit(event, 'xac_nhan_cong')">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 bg-slate-50 p-4 rounded-lg border">
-                        <div><label class="text-[10px] font-bold text-slate-400 uppercase">Họ và tên</label><input type="text" id="att_name" required class="w-full border p-2 rounded text-sm"></div>
-                        <div><label class="text-[10px] font-bold text-slate-400 uppercase">Mã NV</label><input type="text" id="att_id" required class="w-full border p-2 rounded text-sm"></div>
-                        <div><label class="text-[10px] font-bold text-slate-400 uppercase">Bộ phận</label><input type="text" id="att_dept" required class="w-full border p-2 rounded text-sm"></div>
-                        <div><label class="text-[10px] font-bold text-slate-400 uppercase">Email cá nhân</label><input type="email" id="att_email" required class="w-full border p-2 rounded text-sm"></div>
-                        <div class="md:col-span-2"><label class="text-[10px] font-bold text-red-400 uppercase">Email Quản lý</label><input type="email" id="att_manager_email" required class="w-full border p-2 rounded text-sm bg-red-50 border-red-200"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 bg-slate-50 p-4 rounded-lg">
+                        <input type="text" id="att_name" placeholder="Họ và tên *" required class="border p-2 rounded text-sm">
+                        <input type="text" id="att_id" placeholder="Mã NV *" required class="border p-2 rounded text-sm">
+                        <input type="text" id="att_dept" placeholder="Bộ phận *" required class="border p-2 rounded text-sm">
+                        <input type="email" id="att_email" placeholder="Email của bạn *" required class="border p-2 rounded text-sm">
+                        <input type="email" id="att_manager_email" placeholder="Email Quản lý duyệt *" required class="border md:col-span-2 p-2 rounded bg-red-50">
                     </div>
-                    <div class="flex justify-between items-center mb-2"><h3 class="font-bold">Chi tiết công:</h3><button type="button" onclick="addRow()" class="bg-blue-600 text-white px-4 py-1 rounded text-xs shadow">+ Thêm dòng</button></div>
-                    <div class="overflow-x-auto border rounded mb-8">
-                        <table class="w-full text-sm hidden md:table"><thead class="bg-slate-100"><tr><th class="p-3 text-left">Ngày</th><th class="p-3">Vào</th><th class="p-3">Ra</th><th class="p-3 text-center">Công</th><th class="p-3">Lý do</th><th class="p-3">Xóa</th></tr></thead>
-                        <tbody id="attendance-table-body" class="divide-y attendance-table-body"></tbody></table>
-                        <div id="attendance-mobile-container" class="md:hidden"></div>
-                    </div>
-                    <button type="submit" class="w-full bg-blue-900 text-white font-bold py-4 rounded-xl shadow-lg">GỬI XÁC NHẬN CÔNG</button>
+                    <div class="flex justify-between mb-2"><h3 class="font-bold">Chi tiết công</h3><button type="button" onclick="addRowAtt()" class="bg-blue-600 text-white px-3 py-1 rounded text-xs">+ Thêm dòng</button></div>
+                    <table class="w-full text-sm border-collapse mb-6"><thead class="bg-slate-100"><tr><th class="p-2 border">Ngày</th><th class="p-2 border">Vào</th><th class="p-2 border">Ra</th><th class="p-2 border text-center">Công</th><th class="p-2 border">Xóa</th></tr></thead>
+                    <tbody id="att-body" class="bg-white"></tbody></table>
+                    <button type="submit" class="w-full bg-blue-900 text-white font-bold py-3 rounded-lg shadow-lg uppercase">Gửi Xác Nhận Công</button>
                 </form>
             </div>
 
             <div id="tab-ot" class="tab-content p-6 md:p-10 hidden">
-                <h2 class="text-2xl font-bold text-orange-600 uppercase border-b-2 border-orange-500 pb-2 mb-6">Đăng Ký Làm Thêm Giờ (OT)</h2>
+                <h2 class="text-xl font-bold text-orange-600 uppercase border-b-2 border-orange-500 pb-2 mb-6">Đăng Ký Làm Thêm (OT)</h2>
                 <form onsubmit="handleSubmit(event, 'lam_them')">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-orange-50 p-4 rounded-lg border border-orange-100">
-                        <input type="text" id="ot_name" placeholder="Họ và tên *" required class="border p-2 rounded text-sm shadow-sm">
-                        <input type="email" id="ot_email" placeholder="Email cá nhân *" required class="border p-2 rounded text-sm shadow-sm">
-                        <input type="text" id="ot_dept" placeholder="Bộ phận *" required class="border p-2 rounded text-sm shadow-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-orange-50 p-4 rounded-lg">
+                        <input type="text" id="ot_name" placeholder="Họ và tên *" required class="border p-2 rounded text-sm">
+                        <input type="email" id="ot_email" placeholder="Email của bạn *" required class="border p-2 rounded text-sm">
+                        <input type="text" id="ot_dept" placeholder="Bộ phận *" required class="border p-2 rounded text-sm">
                         <input type="email" id="ot_manager_email" placeholder="Email Quản lý *" required class="border p-2 rounded text-sm border-red-200">
+                        <input type="text" id="ot_basis" placeholder="Căn cứ (Dự án/Kế hoạch) *" required class="border p-2 rounded text-sm">
+                        <input type="text" id="ot_proposal" placeholder="Đề xuất (Nghỉ bù/Trả lương) *" required class="border p-2 rounded text-sm">
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-sm">
-                        <input type="text" id="ot_basis" placeholder="Căn cứ kế hoạch *" required class="border p-2 rounded shadow-sm">
-                        <input type="text" id="ot_proposal" placeholder="Đề xuất phương án *" required class="border p-2 rounded shadow-sm">
-                    </div>
-                    <div class="flex justify-between mb-3"><h3 class="font-bold text-orange-800">Danh sách ca OT:</h3><button type="button" onclick="addOTRow()" class="bg-orange-600 text-white px-4 py-1 rounded text-xs">+ Thêm ca</button></div>
+                    <div class="flex justify-between mb-2"><h3 class="font-bold text-orange-800">Chi tiết ca làm thêm</h3><button type="button" onclick="addOTRow()" class="bg-orange-600 text-white px-3 py-1 rounded text-xs">+ Thêm ca</button></div>
                     <div id="ot-list-container" class="space-y-3 mb-6"></div>
-                    <div class="bg-orange-100 p-4 rounded-xl text-right mb-8 font-bold">TỔNG GIỜ OT: <span id="ot-total-hours" class="text-2xl text-orange-700">0</span> giờ</div>
-                    <button type="submit" class="w-full bg-orange-600 text-white font-bold py-4 rounded-xl shadow-lg">GỬI ĐĂNG KÝ OT</button>
+                    <div class="bg-orange-100 p-4 rounded text-right mb-6 font-bold uppercase">Tổng thời gian OT: <span id="ot-total-hours" class="text-2xl text-orange-700">0</span> giờ</div>
+                    <button type="submit" class="w-full bg-orange-600 text-white font-bold py-3 rounded-lg shadow-lg uppercase">Gửi Đăng Ký OT</button>
                 </form>
             </div>
 
             <div id="tab-leave" class="tab-content p-6 md:p-10 hidden">
-                <h2 class="text-2xl font-bold text-green-700 uppercase border-b-2 border-green-600 pb-2 mb-6">Đơn Xin Nghỉ Phép</h2>
+                <h2 class="text-xl font-bold text-green-700 uppercase border-b-2 border-green-600 pb-2 mb-6">Đơn Xin Nghỉ Phép</h2>
                 <form onsubmit="handleSubmit(event, 'nghi_phep')">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-green-50 p-4 rounded-lg border border-green-100">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-green-50 p-4 rounded-lg">
                         <input type="text" id="leave_name" placeholder="Họ và tên *" required class="border p-2 rounded text-sm">
-                        <input type="email" id="leave_email" placeholder="Email cá nhân *" required class="border p-2 rounded text-sm">
+                        <input type="email" id="leave_email" placeholder="Email của bạn *" required class="border p-2 rounded text-sm">
                         <input type="text" id="leave_dept" placeholder="Bộ phận *" required class="border p-2 rounded text-sm">
                         <input type="email" id="leave_manager_email" placeholder="Email Quản lý *" required class="border p-2 rounded text-sm border-red-200">
                     </div>
                     
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mb-8">
-                        <label class="cursor-pointer border p-3 rounded-lg text-center text-xs font-bold has-[:checked]:bg-green-100 has-[:checked]:border-green-600 transition"><input type="radio" name="leaveType" value="Nghỉ phép" class="hidden" required>Nghỉ phép</label>
-                        <label class="cursor-pointer border p-3 rounded-lg text-center text-xs font-bold has-[:checked]:bg-green-100 has-[:checked]:border-green-600 transition"><input type="radio" name="leaveType" value="Nghỉ bù" class="hidden">Nghỉ bù</label>
-                        <label class="cursor-pointer border p-3 rounded-lg text-center text-xs font-bold has-[:checked]:bg-green-100 has-[:checked]:border-green-600 transition"><input type="radio" name="leaveType" value="Nghỉ không lương" class="hidden">Không lương</label>
-                        <label class="cursor-pointer border p-3 rounded-lg text-center text-xs font-bold has-[:checked]:bg-green-100 has-[:checked]:border-green-600 transition"><input type="radio" name="leaveType" value="Nghỉ thai sản" class="hidden">Thai sản</label>
-                        <label class="cursor-pointer border p-3 rounded-lg text-center text-xs font-bold has-[:checked]:bg-green-100 has-[:checked]:border-green-600 transition"><input type="radio" name="leaveType" value="Khác" class="hidden">Khác</label>
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Chọn loại hình nghỉ:</label>
+                        <select id="leave_type" class="w-full border p-2 rounded text-sm bg-white shadow-sm">
+                            <option value="Nghỉ phép">Nghỉ phép</option>
+                            <option value="Nghỉ bù">Nghỉ bù</option>
+                            <option value="Nghỉ không lương">Nghỉ không lương</option>
+                            <option value="Nghỉ thai sản">Nghỉ thai sản</option>
+                            <option value="Nghỉ khác">Nghỉ khác</option>
+                        </select>
                     </div>
 
-                    <div class="bg-white p-6 border-2 border-slate-100 rounded-2xl shadow-sm mb-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
-                            <div><label class="text-xs font-bold text-slate-500 block mb-1">TỪ NGÀY *</label><input type="date" id="leaveStartDate" onchange="calcLeave()" required class="w-full border p-3 rounded-lg"></div>
-                            <div><label class="text-xs font-bold text-slate-500 block mb-1">ĐẾN NGÀY *</label><input type="date" id="leaveEndDate" onchange="calcLeave()" required class="w-full border p-3 rounded-lg"></div>
-                        </div>
-                        <div class="bg-blue-50 p-4 rounded-xl flex items-center justify-center border border-dashed border-blue-200">
-                            <label class="flex items-center text-sm cursor-pointer select-none font-semibold text-blue-800">
-                                <input type="checkbox" id="leaveHalfDay" onchange="calcLeave()" class="mr-3 w-5 h-5 accent-blue-600"> 
-                                Nghỉ nửa ngày (Hệ thống sẽ trừ 0.5 vào tổng ngày làm việc)
-                            </label>
-                        </div>
-                        <div class="mt-6 text-center border-t pt-6">
-                            <span class="text-xs font-bold text-slate-400 uppercase block mb-1">Tổng cộng (Đã trừ T7, CN)</span>
-                            <div class="flex items-center justify-center"><input type="number" id="leaveTotalDays" value="0" step="0.5" readonly class="text-5xl font-black text-green-700 bg-transparent text-center outline-none w-32"> <span class="text-xl font-bold text-green-700 ml-2">ngày</span></div>
-                        </div>
+                    <div class="flex justify-between mb-2"><h3 class="font-bold text-green-800">Danh sách ngày nghỉ (Có thể thêm nhiều ngày không liền nhau)</h3><button type="button" onclick="addLeaveRow()" class="bg-green-600 text-white px-3 py-1 rounded text-xs">+ Thêm ngày</button></div>
+                    <div class="overflow-x-auto border rounded mb-6">
+                        <table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="p-2 border text-left">Ngày nghỉ</th><th class="p-2 border">Thời lượng</th><th class="p-2 border">Xóa</th></tr></thead>
+                        <tbody id="leave-body" class="bg-white"></tbody></table>
                     </div>
-                    <textarea id="leave_reason" placeholder="Lý do nghỉ, thông tin ngày nghỉ chi tiết..." required class="w-full border p-4 rounded-xl mb-8 h-28 focus:ring-2 focus:ring-green-500 outline-none shadow-sm"></textarea>
-                    <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-700 transition">GỬI ĐƠN NGHỈ PHÉP</button>
+
+                    <div class="bg-green-100 p-4 rounded text-right mb-6 font-bold uppercase">Tổng số ngày nghỉ: <span id="leave-total-days" class="text-2xl text-green-700">0</span> ngày</div>
+                    <textarea id="leave_reason" placeholder="Lý do chi tiết..." required class="w-full border p-3 rounded mb-6 h-24 shadow-sm"></textarea>
+                    <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg shadow-lg uppercase">Gửi Đơn Nghỉ Phép</button>
                 </form>
             </div>
         </div>
-        <div class="text-center text-slate-400 text-xs mt-10 pb-10">@2025 Trường Cao Đẳng Việt Mỹ Hà Nội</div>
+        <div class="text-center text-slate-400 text-xs mt-8 pb-10">@2025 Trường Cao Đẳng Việt Mỹ Hà Nội</div>
     </div>
 
     <div id="successModal" class="fixed inset-0 bg-slate-900/80 hidden flex items-center justify-center z-50 px-4">
-        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-sm w-full text-center">
-            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl"><i class="fas fa-check"></i></div>
-            <h3 class="text-2xl font-bold mb-3">Thành công!</h3>
-            <p class="text-slate-500 mb-8">Đơn của bạn đã được gửi thành công.</p>
-            <button onclick="location.reload()" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-bold">Đóng cửa sổ</button>
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center">
+            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"><i class="fas fa-check"></i></div>
+            <h3 class="text-xl font-bold mb-2">Thành công!</h3>
+            <p class="text-slate-600 mb-6">Đơn của bạn đã được gửi thành công.</p>
+            <button onclick="location.reload()" class="w-full bg-blue-900 text-white py-3 rounded-xl font-bold">Đóng cửa sổ</button>
         </div>
     </div>
 
@@ -160,139 +143,158 @@
         function switchTab(id) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(id).classList.remove('hidden').classList.add('block');
+            document.getElementById(id).classList.remove('hidden');
             document.getElementById('btn-' + id).classList.add('active');
         }
 
-        // --- ATTENDANCE LOGIC ---
-        function addRow() {
-            const body = document.getElementById('attendance-table-body'), mobile = document.getElementById('attendance-mobile-container'), uid = Date.now();
-            const tr = document.createElement('tr'); tr.id = `row-${uid}`;
+        // --- 1. LOGIC XÁC NHẬN CÔNG ---
+        function addRowAtt() {
+            const body = document.getElementById('att-body');
+            const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td class="p-3"><input type="date" class="item-date w-full border-b py-1"></td>
-                <td class="p-3"><input type="time" class="item-in w-full border-b py-1" onchange="calcAtt(this)"></td>
-                <td class="p-3"><input type="time" class="item-out w-full border-b py-1" onchange="calcAtt(this)"></td>
-                <td class="p-3 text-center"><input type="text" name="tong_cong_calc" value="0" class="item-total w-12 text-center font-bold text-blue-600 bg-transparent outline-none" readonly></td>
-                <td class="p-3"><input type="text" class="item-reason border-b w-full" placeholder="..."></td>
-                <td class="p-3 text-center"><button type="button" onclick="removeRow(this)" class="text-slate-300 hover:text-red-500 transition"><i class="fas fa-trash"></i></button></td>
+                <td class="p-2 border"><input type="date" class="att-date w-full text-xs"></td>
+                <td class="p-2 border"><input type="time" class="att-in w-full text-xs" onchange="calcAtt(this)"></td>
+                <td class="p-2 border"><input type="time" class="att-out w-full text-xs" onchange="calcAtt(this)"></td>
+                <td class="p-2 border text-center font-bold text-blue-600"><input type="text" class="att-total w-full text-center bg-transparent outline-none" value="0" readonly></td>
+                <td class="p-2 border text-center"><button type="button" onclick="this.closest('tr').remove()" class="text-red-400"><i class="fas fa-trash"></i></button></td>
             `;
             body.appendChild(tr);
-
-            const mRow = document.createElement('div'); mRow.id = `card-${uid}`;
-            mRow.className = 'border-2 border-slate-200 rounded-xl p-4 mb-4 bg-white shadow-sm';
-            mRow.innerHTML = `
-                <div class="flex justify-between border-b pb-2 mb-3"><span class="font-bold text-blue-800 text-xs uppercase">Dòng kê công</span><button type="button" onclick="removeCard(this)" class="text-red-500 text-xs font-bold">XÓA</button></div>
-                <div><span class="mobile-label">Ngày</span><input type="date" class="item-date w-full border-b py-2 text-sm"></div>
-                <div class="input-group-mobile my-3">
-                    <div><span class="mobile-label">Giờ vào</span><input type="time" class="item-in w-full border-b py-2 text-sm" onchange="calcAtt(this)"></div>
-                    <div><span class="mobile-label">Giờ ra</span><input type="time" class="item-out w-full border-b py-2 text-sm" onchange="calcAtt(this)"></div>
-                </div>
-                <div class="bg-blue-50 p-2 rounded flex justify-between items-center"><span class="text-xs font-bold text-blue-800 uppercase">Công:</span><input type="text" name="tong_cong_calc" value="0" class="item-total w-16 text-right font-bold text-blue-700 bg-transparent text-lg" readonly></div>
-                <div><span class="mobile-label">Lý do</span><input type="text" class="item-reason w-full border-b py-2 text-sm"></div>
-            `;
-            mobile.appendChild(mRow);
-            tr.dataset.linkedCard = mRow.id; mRow.dataset.linkedRow = tr.id;
-            const mInps = mRow.querySelectorAll('input'), tInps = tr.querySelectorAll('input');
-            mInps.forEach((m, i) => {
-                m.addEventListener('input', () => { tInps[i].value = m.value; tInps[i].dispatchEvent(new Event('change')); });
-                tInps[i].addEventListener('input', () => { m.value = tInps[i].value; m.dispatchEvent(new Event('change')); });
-            });
         }
-        function removeRow(btn) { const r = btn.closest('tr'); document.getElementById(r.dataset.linkedCard).remove(); r.remove(); if(document.getElementById('attendance-table-body').children.length===0) addRow(); }
-        function removeCard(btn) { const c = btn.closest('div[id^="card-"]'); document.getElementById(c.dataset.linkedRow).remove(); c.remove(); if(document.getElementById('attendance-mobile-container').children.length===0) addRow(); }
-        function calcAtt(input) {
-            const container = input.closest('tr') || input.closest('div[id^="card-"]');
-            const tin = container.querySelector('.item-in').value, tout = container.querySelector('.item-out').value;
-            if(tin && tout) {
-                const [h1, m1] = tin.split(':').map(Number), [h2, m2] = tout.split(':').map(Number);
+        function calcAtt(inp) {
+            const tr = inp.closest('tr');
+            const start = tr.querySelector('.att-in').value, end = tr.querySelector('.att-out').value;
+            if(start && end) {
+                const [h1, m1] = start.split(':').map(Number), [h2, m2] = end.split(':').map(Number);
                 let diff = (h2 * 60 + m2) - (h1 * 60 + m1);
-                if (diff > 300) diff -= 60;
-                if (diff > 0) {
-                    const hrs = diff / 60; let c = (hrs >= 8) ? 1 : (hrs >= 4 ? 0.5 : (hrs/8).toFixed(2));
-                    document.querySelectorAll(`.item-total`).forEach(el => {
-                        if (el.closest(`#${container.id}`) || el.closest(`#${container.dataset.linkedRow || container.dataset.linkedCard}`)) el.value = c;
-                    });
-                }
+                if (diff > 300) diff -= 60; // Trừ nghỉ trưa
+                tr.querySelector('.att-total').value = diff > 0 ? (diff >= 480 ? 1 : (diff >= 240 ? 0.5 : (diff/480).toFixed(2))) : 0;
             }
         }
 
-        // --- SMART LEAVE LOGIC (NO WEEKENDS) ---
-        function calcLeave() {
-            const startStr = document.getElementById('leaveStartDate').value;
-            const endStr = document.getElementById('leaveEndDate').value;
-            const half = document.getElementById('leaveHalfDay').checked;
-            const out = document.getElementById('leaveTotalDays');
-
-            if(startStr && endStr) {
-                let start = new Date(startStr);
-                let end = new Date(endStr);
-                let count = 0;
-                
-                // Vòng lặp từ ngày bắt đầu đến ngày kết thúc
-                let cur = new Date(start);
-                while(cur <= end) {
-                    let dayOfWeek = cur.getDay(); // 0: CN, 6: T7
-                    if(dayOfWeek !== 0 && dayOfWeek !== 6) {
-                        count++;
-                    }
-                    cur.setDate(cur.getDate() + 1);
-                }
-
-                let finalResult = count;
-                if(half && finalResult > 0) {
-                    finalResult -= 0.5;
-                }
-                out.value = finalResult > 0 ? finalResult : 0;
-            }
-        }
-
-        // --- OT LOGIC ---
+        // --- 2. LOGIC OT (SỬA LỖI TÍNH TOÁN) ---
         function addOTRow() {
-            const container = document.getElementById('ot-list-container'), div = document.createElement('div');
-            div.className = 'bg-slate-50 p-4 rounded-xl border relative shadow-sm';
+            const container = document.getElementById('ot-list-container');
+            const div = document.createElement('div');
+            div.className = 'ot-item bg-slate-50 p-4 rounded-lg border relative shadow-sm';
             div.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove();upTotalOT();" class="absolute -top-2 -right-2 bg-white text-red-500 rounded-full w-6 h-6 border flex items-center justify-center shadow-sm"><i class="fas fa-times"></i></button>
-                <div class="grid grid-cols-2 gap-4 mb-3">
-                    <div><label class="text-[9px] font-bold text-slate-400 block mb-1 uppercase">Ngày làm thêm</label><input type="date" class="ot-date border p-2 text-sm rounded-lg w-full" value="${new Date().toISOString().split('T')[0]}"></div>
-                    <div class="flex gap-2">
-                        <div class="w-1/2"><label class="text-[9px] font-bold text-slate-400 block mb-1 uppercase">Giờ vào</label><input type="time" class="ot-in border p-2 text-sm rounded-lg w-full" onchange="calcOT(this)"></div>
-                        <div class="w-1/2"><label class="text-[9px] font-bold text-slate-400 block mb-1 uppercase">Giờ ra</label><input type="time" class="ot-out border p-2 text-sm rounded-lg w-full" onchange="calcOT(this)"></div>
+                <button type="button" onclick="this.parentElement.remove();upTotalOT();" class="absolute top-1 right-1 text-slate-300 hover:text-red-500"><i class="fas fa-times-circle"></i></button>
+                <div class="grid grid-cols-2 gap-3 mb-2">
+                    <div class="text-[10px] font-bold">NGÀY OT: <input type="date" class="ot-date w-full mt-1 border rounded p-1 text-sm shadow-sm" value="${new Date().toISOString().split('T')[0]}"></div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="text-[10px] font-bold">VÀO: <input type="time" class="ot-in w-full mt-1 border rounded p-1 text-sm shadow-sm" onchange="calcOT(this)"></div>
+                        <div class="text-[10px] font-bold">RA: <input type="time" class="ot-out w-full mt-1 border rounded p-1 text-sm shadow-sm" onchange="calcOT(this)"></div>
                     </div>
                 </div>
-                <div class="flex justify-between items-center bg-white p-2 rounded-lg border border-slate-100"><input type="text" class="ot-task text-xs w-2/3 outline-none" placeholder="Mô tả công việc..."><div class="text-orange-600 font-black text-lg"><span class="row-h">0</span><span class="text-[10px] ml-1">h</span></div></div>
+                <div class="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-inner">
+                    <input type="text" class="ot-task text-xs w-2/3 border-none outline-none" placeholder="Mô tả công việc...">
+                    <span class="font-bold text-orange-600"><span class="row-h">0</span> giờ</span>
+                </div>
             `;
             container.appendChild(div);
         }
         function calcOT(inp) {
-            const p = inp.closest('div').parentElement.parentElement, i = p.querySelector('.ot-in').value, o = p.querySelector('.ot-out').value;
-            if(i && o) {
-                const [h1, m1] = i.split(':').map(Number), [h2, m2] = o.split(':').map(Number);
-                const h = (h2*60+m2 - (h1*60+m1))/60; p.querySelector('.row-h').innerText = h > 0 ? h.toFixed(1) : 0; upTotalOT();
+            const p = inp.closest('.ot-item');
+            const s = p.querySelector('.ot-in').value, e = p.querySelector('.ot-out').value;
+            if(s && e) {
+                const [h1, m1] = s.split(':').map(Number), [h2, m2] = e.split(':').map(Number);
+                let diffMin = (h2 * 60 + m2) - (h1 * 60 + m1);
+                // Nếu làm xuyên trưa (VD: từ 11:00 đến 14:00) thì không trừ, trừ khi làm quá lâu
+                let hourResult = diffMin / 60;
+                p.querySelector('.row-h').innerText = hourResult > 0 ? hourResult.toFixed(1) : 0;
+                upTotalOT();
             }
         }
         function upTotalOT() { let t = 0; document.querySelectorAll('.row-h').forEach(el => t += parseFloat(el.innerText)); document.getElementById('ot-total-hours').innerText = t.toFixed(1); }
 
-        // --- SUBMIT ---
+        // --- 3. LOGIC NGHỈ PHÉP (NGÀY KHÔNG LIỀN NHAU) ---
+        function addLeaveRow() {
+            const body = document.getElementById('leave-body');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="p-2 border"><input type="date" class="leave-date w-full text-xs" onchange="upTotalLeave()"></td>
+                <td class="p-2 border">
+                    <select class="leave-duration w-full text-xs" onchange="upTotalLeave()">
+                        <option value="1">Cả ngày (1 công)</option>
+                        <option value="0.5">Nửa ngày (0.5 công)</option>
+                    </select>
+                </td>
+                <td class="p-2 border text-center"><button type="button" onclick="this.closest('tr').remove();upTotalLeave();" class="text-red-400"><i class="fas fa-trash"></i></button></td>
+            `;
+            body.appendChild(tr);
+            upTotalLeave();
+        }
+        function upTotalLeave() {
+            let total = 0;
+            document.querySelectorAll('#leave-body tr').forEach(tr => {
+                if(tr.querySelector('.leave-date').value) {
+                    total += parseFloat(tr.querySelector('.leave-duration').value);
+                }
+            });
+            document.getElementById('leave-total-days').innerText = total;
+        }
+
+        // --- SUBMIT DỮ LIỆU ---
         async function handleSubmit(e, type) {
             e.preventDefault();
             document.getElementById('loading').classList.remove('hidden');
             let data = { form_type: type, submitted_at: new Date().toLocaleString('vi-VN') };
+
             if(type === 'xac_nhan_cong') {
-                data.ho_ten = document.getElementById('att_name').value; data.id_cc = document.getElementById('att_id').value; data.phong_ban = document.getElementById('att_dept').value; data.email_nv = document.getElementById('att_email').value; data.email_quan_ly = document.getElementById('att_manager_email').value;
-                data.chi_tiet = Array.from(document.querySelectorAll('#attendance-table-body tr')).map(tr => ({ ngay: tr.querySelector('.item-date').value, gio_vao: tr.querySelector('.item-in').value, gio_ra: tr.querySelector('.item-out').value, tong: tr.querySelector('.item-total').value, ly_do: tr.querySelector('.item-reason').value, hinh_thuc: 'Xác nhận công' }));
+                data.ho_ten = document.getElementById('att_name').value;
+                data.id_cc = document.getElementById('att_id').value;
+                data.phong_ban = document.getElementById('att_dept').value;
+                data.email_nv = document.getElementById('att_email').value;
+                data.email_quan_ly = document.getElementById('att_manager_email').value;
+                data.chi_tiet = Array.from(document.querySelectorAll('#att-body tr')).map(tr => ({
+                    ngay: tr.querySelector('.att-date').value,
+                    gio_vao: tr.querySelector('.att-in').value,
+                    gio_ra: tr.querySelector('.att-out').value,
+                    tong: tr.querySelector('.att-total').value,
+                    ly_do: 'Xác nhận công thực tế'
+                }));
             } else if(type === 'lam_them') {
-                data.ho_ten = document.getElementById('ot_name').value; data.email_nv = document.getElementById('ot_email').value; data.bo_phan = document.getElementById('ot_dept').value; data.email_quan_ly = document.getElementById('ot_manager_email').value; data.can_cu = document.getElementById('ot_basis').value; data.de_xuat = document.getElementById('ot_proposal').value; data.tong_gio = document.getElementById('ot-total-hours').innerText;
-                data.chi_tiet = Array.from(document.querySelectorAll('#ot-list-container > div')).map(div => ({ bat_dau: div.querySelector('.ot-date').value + ' ' + div.querySelector('.ot-in').value, ket_thuc: div.querySelector('.ot-date').value + ' ' + div.querySelector('.ot-out').value, so_gio: div.querySelector('.row-h').innerText, cong_viec: div.querySelector('.ot-task').value }));
+                data.ho_ten = document.getElementById('ot_name').value;
+                data.email_nv = document.getElementById('ot_email').value;
+                data.bo_phan = document.getElementById('ot_dept').value;
+                data.email_quan_ly = document.getElementById('ot_manager_email').value;
+                data.can_cu = document.getElementById('ot_basis').value;
+                data.de_xuat = document.getElementById('ot_proposal').value;
+                data.tong_gio = document.getElementById('ot-total-hours').innerText;
+                data.chi_tiet = Array.from(document.querySelectorAll('.ot-item')).map(div => ({
+                    bat_dau: div.querySelector('.ot-date').value + ' ' + div.querySelector('.ot-in').value,
+                    ket_thuc: div.querySelector('.ot-date').value + ' ' + div.querySelector('.ot-out').value,
+                    so_gio: div.querySelector('.row-h').innerText,
+                    cong_viec: div.querySelector('.ot-task').value
+                }));
             } else if(type === 'nghi_phep') {
-                data.ho_ten = document.getElementById('leave_name').value; data.email_nv = document.getElementById('leave_email').value; data.bo_phan = document.getElementById('leave_dept').value; data.email_quan_ly = document.getElementById('leave_manager_email').value; data.loai_nghi = document.querySelector('input[name="leaveType"]:checked').value; data.tu_ngay = document.getElementById('leaveStartDate').value; data.den_ngay = document.getElementById('leaveEndDate').value; data.tong_ngay = document.getElementById('leaveTotalDays').value; data.ly_do = document.getElementById('leave_reason').value;
+                data.ho_ten = document.getElementById('leave_name').value;
+                data.email_nv = document.getElementById('leave_email').value;
+                data.bo_phan = document.getElementById('leave_dept').value;
+                data.email_quan_ly = document.getElementById('leave_manager_email').value;
+                data.loai_nghi = document.getElementById('leave_type').value;
+                data.tong_ngay = document.getElementById('leave-total-days').innerText;
+                data.ly_do = document.getElementById('leave_reason').value;
+                // Danh sách chi tiết các ngày nghỉ lẻ
+                data.chi_tiet_ngay = Array.from(document.querySelectorAll('#leave-body tr')).map(tr => ({
+                    ngay: tr.querySelector('.leave-date').value,
+                    cong: tr.querySelector('.leave-duration').value
+                }));
+                // Để n8n cũ không lỗi, ta gán Tu_ngay và Den_ngay bằng ngày đầu và ngày cuối của danh sách
+                const dates = data.chi_tiet_ngay.map(i => i.ngay).filter(i => i).sort();
+                data.tu_ngay = dates[0] || "";
+                data.den_ngay = dates[dates.length - 1] || "";
             }
+
             try {
                 const res = await fetch(N8N_WEBHOOK_URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
                 if(res.ok) document.getElementById('successModal').classList.remove('hidden');
-            } catch(err) { alert('Lỗi kết nối!'); }
+                else alert('Lỗi kết nối Server!');
+            } catch(err) { alert('Lỗi: ' + err); }
             document.getElementById('loading').classList.add('hidden');
         }
-        addRow();
+        
+        // Khởi tạo dòng mặc định
+        addRowAtt(); addOTRow(); addLeaveRow();
     </script>
 </body>
 </html>
