@@ -71,17 +71,161 @@
             background-size: 200% auto;
         }
         .btn-grad:hover { background-position: right center; }
+/* COMPACT HR PORTAL IN IFRAME */
+html, body{
+  font-size:13px;
+}
+
+body{
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+.glass{
+  box-shadow:0 10px 26px rgba(31,38,135,.06);
+}
+
+.tab-btn{
+  padding:14px 10px !important;
+  border-radius:18px !important;
+}
+
+.tab-btn i{
+  font-size:1rem !important;
+}
+
+.tab-btn span{
+  font-size:.66rem !important;
+  letter-spacing:.02em;
+}
+
+.tab-btn.active{
+  transform:translateY(-1px);
+  box-shadow:0 8px 18px -6px rgba(0,0,0,.12);
+}
+
+h2{
+  font-size:1.25rem !important;
+  margin-bottom:1.25rem !important;
+  font-weight:800 !important;
+  letter-spacing:-.03em;
+}
+
+label{
+  font-weight:700 !important;
+  letter-spacing:.02em;
+}
+
+input, select, textarea{
+  padding:11px 13px !important;
+  border-radius:15px !important;
+  font-size:.82rem !important;
+  font-weight:500 !important;
+}
+
+textarea{
+  min-height:92px !important;
+}
+
+button{
+  font-weight:800 !important;
+}
+
+form .grid{
+  gap:12px !important;
+  margin-bottom:22px !important;
+}
+
+.card-item{
+  border-radius:17px !important;
+  padding:10px !important;
+}
+
+.card-item input,
+.card-item select{
+  padding:9px 10px !important;
+  font-size:.78rem !important;
+  border-radius:12px !important;
+}
+
+.btn-grad,
+button[type="submit"]{
+  padding:13px 16px !important;
+  border-radius:18px !important;
+  font-size:.92rem !important;
+  letter-spacing:.04em !important;
+}
+
+#att-container,
+#ot-container,
+#leave-container{
+  margin-bottom:20px !important;
+}
+
+.bg-orange-600\/10,
+.bg-green-600\/10{
+  padding:16px !important;
+  border-radius:18px !important;
+  margin-bottom:20px !important;
+}
+
+.text-3xl{
+  font-size:1.55rem !important;
+}
+
+.text-2xl{
+  font-size:1.25rem !important;
+}
+
+.font-black{
+  font-weight:750 !important;
+}
+
+.rounded-\[24px\]{
+  border-radius:18px !important;
+}
+
+.rounded-\[40px\]{
+  border-radius:26px !important;
+}
+
+@media(min-width:900px){
+  #tab-attendance form > .grid,
+  #tab-ot form > .grid,
+  #tab-leave form > .grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+
+@media(max-width:768px){
+  html, body{
+    font-size:12px;
+  }
+
+  .tab-btn{
+    padding:10px 6px !important;
+  }
+
+  h2{
+    font-size:1.05rem !important;
+  }
+
+  input, select, textarea{
+    padding:10px 11px !important;
+  }
+}
+    
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-2 md:p-4">
 
     <div id="loading" class="hidden fixed inset-0 loading-overlay flex flex-col items-center justify-center">
         <div class="animate-bounce mb-4 text-blue-600"><i class="fas fa-paper-plane text-5xl"></i></div>
         <p class="text-lg font-black text-blue-900 tracking-widest uppercase">Đang xử lý dữ liệu</p>
     </div>
 
-    <div class="max-w-4xl mx-auto">
-                <div class="grid grid-cols-3 gap-3 mb-8">
+    <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-3 gap-2 mb-4">
             <button onclick="switchTab('tab-attendance')" id="btn-tab-attendance" class="tab-btn active glass p-4 flex flex-col items-center gap-2">
                 <i class="fas fa-user-check text-xl"></i><span class="text-[10px] md:text-xs font-black">CÔNG NHẬT</span>
             </button>
@@ -93,7 +237,7 @@
             </button>
         </div>
 
-        <div class="glass rounded-[40px] overflow-hidden min-h-[600px] mb-10 p-6 md:p-10">
+        <div class="glass rounded-[26px] overflow-hidden min-h-[520px] mb-4 p-4 md:p-6">
             <div id="tab-attendance" class="tab-content block animate-fade-in text-slate-800 font-bold">
                 <h2 class="text-2xl font-black text-blue-900 mb-8 uppercase tracking-tight">Xác nhận công nhật</h2>
                 <form onsubmit="handleSubmit(event, 'xac_nhan_cong')">
@@ -105,7 +249,7 @@
                         <div class="md:col-span-2 space-y-1"><label class="text-[10px] ml-2 text-slate-400">EMAIL CÁ NHÂN</label><input type="email" id="att_email" required class="w-full p-4 rounded-2xl text-base shadow-inner"></div>
                     </div>
 
-                    <div class="flex justify-between items-center mb-6"><h3 class="font-black text-slate-600 uppercase tracking-widest text-sm">Chi tiết bảng công</h3><button type="button" onclick="addAttRow()" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-[10px] font-black shadow-lg hover:bg-blue-700 uppercase">+ Thêm dòng</button></div>
+                    <div class="flex justify-between items-center mb-6"><h3 class="font-black text-slate-600 uppercase tracking-widest text-sm">Chi tiết bảng công</h3><button type="button" onclick="addAttRow()" class="bg-blue-600 text-white px-3 py-2 rounded-xl text-[10px] font-black shadow-lg hover:bg-blue-700 uppercase">+ Thêm dòng</button></div>
                     <div id="att-container" class="space-y-4 mb-10"></div>
                     
                     <button type="submit" class="btn-grad w-full text-white font-black py-5 rounded-[24px] text-lg shadow-xl shadow-blue-200 uppercase tracking-widest">Gửi xác nhận công</button>
@@ -123,7 +267,7 @@
                         <input type="text" id="ot_basis" placeholder="Căn cứ (Dự án/Kế hoạch) *" required class="p-4 rounded-2xl font-bold md:col-span-2 shadow-inner">
                         <input type="text" id="ot_proposal" placeholder="Đề xuất (Nghỉ bù/Trả lương) *" required class="p-4 rounded-2xl font-bold md:col-span-2 shadow-inner">
                     </div>
-                    <div class="flex justify-between items-center mb-6"><h3 class="font-black text-orange-800 uppercase text-xs">Danh sách ca OT</h3><button type="button" onclick="addOTRow()" class="bg-orange-600 text-white px-5 py-2 rounded-xl text-[10px] font-black shadow-lg uppercase">+ Thêm ca</button></div>
+                    <div class="flex justify-between items-center mb-6"><h3 class="font-black text-orange-800 uppercase text-xs">Danh sách ca OT</h3><button type="button" onclick="addOTRow()" class="bg-orange-600 text-white px-3 py-2 rounded-xl text-[10px] font-black shadow-lg uppercase">+ Thêm ca</button></div>
                     <div id="ot-container" class="space-y-4 mb-8"></div>
                     <div class="bg-orange-600/10 p-6 rounded-[24px] text-right mb-10 border border-orange-200 flex justify-between items-center"><span class="font-black text-orange-900 uppercase text-xs">Tổng giờ:</span><span class="text-3xl font-black text-orange-700"><span id="ot-total-hours">0</span>H</span></div>
                     <button type="submit" class="w-full bg-gradient-to-r from-orange-600 to-orange-500 text-white font-black py-5 rounded-[24px] text-lg shadow-xl shadow-orange-100 uppercase tracking-widest">Gửi đăng ký làm thêm</button>
@@ -142,7 +286,7 @@
                     <select id="leave_type" class="w-full p-4 rounded-2xl mb-8 font-bold text-sm bg-slate-100">
                         <option value="Nghỉ phép">Nghỉ phép</option><option value="Nghỉ bù">Nghỉ bù</option><option value="Nghỉ không lương">Nghỉ không lương</option><option value="Nghỉ thai sản">Nghỉ thai sản</option><option value="Nghỉ khác">Nghỉ khác</option>
                     </select>
-                    <div class="flex justify-between items-center mb-6 font-bold"><h3 class="font-black text-green-800 uppercase text-xs tracking-widest">Danh sách ngày nghỉ</h3><button type="button" onclick="addLeaveRow()" class="bg-green-600 text-white px-5 py-2 rounded-xl text-[10px] font-black shadow-lg uppercase font-bold">+ Thêm ngày</button></div>
+                    <div class="flex justify-between items-center mb-6 font-bold"><h3 class="font-black text-green-800 uppercase text-xs tracking-widest">Danh sách ngày nghỉ</h3><button type="button" onclick="addLeaveRow()" class="bg-green-600 text-white px-3 py-2 rounded-xl text-[10px] font-black shadow-lg uppercase font-bold">+ Thêm ngày</button></div>
                     <div id="leave-container" class="space-y-4 mb-8 font-bold"></div>
                     <div class="bg-green-600/10 p-6 rounded-[24px] text-right mb-10 border border-green-200 flex justify-between items-center font-bold"><span class="font-black text-green-900 uppercase text-xs">Tổng ngày nghỉ:</span><span class="text-3xl font-black text-green-700"><span id="leave-total-days">0</span> NGÀY</span></div>
                     <textarea id="leave_reason" placeholder="Lý do chi tiết..." required class="w-full p-5 rounded-[24px] mb-10 h-32 text-sm font-bold shadow-inner"></textarea>
