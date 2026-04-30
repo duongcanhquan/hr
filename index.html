@@ -164,8 +164,7 @@
 
     <script>
         const N8N_URL = 'https://apchn-host.lapage.vn/webhook/submit-portal';
-        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' });
-
+        var currentDateEl = document.getElementById('currentDate');
         function switchTab(id) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
